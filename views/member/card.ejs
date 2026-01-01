@@ -1,0 +1,142 @@
+<section class="py-12">
+    <div class="max-w-2xl mx-auto px-4">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">Kartu Anggota</h1>
+
+        <% if (card && card.card_image) { %>
+            <!-- Card Preview -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-gray-800">Kartu Anggota</h3>
+                    <form action="/member/card/regenerate" method="POST" class="inline">
+                        <button type="submit"
+                            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 text-sm">
+                            <i class="fas fa-sync mr-2"></i>Update Data Kartu
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Card Tabs -->
+                <div class="mb-4">
+                    <div class="flex border-b border-gray-200">
+                        <button onclick="showCard('front')" id="tab-front"
+                            class="px-4 py-2 border-b-2 border-orange-500 text-orange-600 font-medium">
+                            <i class="fas fa-id-card mr-1"></i> Depan
+                        </button>
+                        <% if (card.card_image_back) { %>
+                            <button onclick="showCard('back')" id="tab-back"
+                                class="px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-id-card-alt mr-1"></i> Belakang
+                            </button>
+                            <% } %>
+                    </div>
+                </div>
+
+                <!-- Card Images -->
+                <div class="bg-gray-100 p-8 rounded-lg flex justify-center">
+                    <img id="card-front" src="<%= card.card_image %>?t=<%= Date.now() %>" alt="Kartu Anggota Depan"
+                        class="max-w-full h-auto shadow-lg rounded-lg" style="max-width: 600px;">
+                    <% if (card.card_image_back) { %>
+                        <img id="card-back" src="<%= card.card_image_back %>?t=<%= Date.now() %>"
+                            alt="Kartu Anggota Belakang" class="max-w-full h-auto shadow-lg rounded-lg hidden"
+                            style="max-width: 600px;">
+                        <% } %>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 text-sm text-gray-600 my-6">
+                    <div>
+                        <span class="font-medium">Nomor Kartu:</span>
+                        <p>
+                            <%= card.card_number %>
+                        </p>
+                    </div>
+                    <div>
+                        <span class="font-medium">Berlaku:</span>
+                        <p>
+                            <%= new Date(card.valid_from).toLocaleDateString('id-ID') %> - <%= new
+                                    Date(card.valid_until).toLocaleDateString('id-ID') %>
+                        </p>
+                    </div>
+                </div>
+
+                <a href="/member/card/download"
+                    class="block w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition text-center">
+                    <i class="fas fa-download mr-2"></i>Download Kartu
+                </a>
+            </div>
+
+            <script>
+                function showCard(side) {
+                    const frontCard = document.getElementById('card-front');
+                    const backCard = document.getElementById('card-back');
+                    const tabFront = document.getElementById('tab-front');
+                    const tabBack = document.getElementById('tab-back');
+
+                    if (side === 'front') {
+                        frontCard.classList.remove('hidden');
+                        if (backCard) backCard.classList.add('hidden');
+                        tabFront.classList.add('border-orange-500', 'text-orange-600');
+                        tabFront.classList.remove('border-transparent', 'text-gray-500');
+                        if (tabBack) {
+                            tabBack.classList.remove('border-orange-500', 'text-orange-600');
+                            tabBack.classList.add('border-transparent', 'text-gray-500');
+                        }
+                    } else {
+                        frontCard.classList.add('hidden');
+                        if (backCard) backCard.classList.remove('hidden');
+                        tabFront.classList.remove('border-orange-500', 'text-orange-600');
+                        tabFront.classList.add('border-transparent', 'text-gray-500');
+                        if (tabBack) {
+                            tabBack.classList.add('border-orange-500', 'text-orange-600');
+                            tabBack.classList.remove('border-transparent', 'text-gray-500');
+                        }
+                    }
+                }
+            </script>
+            <% } else { %>
+                <!-- No Card Yet -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
+                    <i class="fas fa-id-card text-5xl text-yellow-500 mb-4"></i>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Kartu Belum Tersedia</h2>
+                    <p class="text-gray-600">
+                        Kartu anggota Anda sedang dalam proses pembuatan oleh admin.
+                        Silakan cek kembali nanti.
+                    </p>
+                </div>
+                <% } %>
+
+                    <!-- Member Info -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="font-semibold text-gray-800 mb-4">Informasi Anggota</h3>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-500">Nama:</span>
+                                <p class="font-medium">
+                                    <%= member.name %>
+                                </p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">ID Member:</span>
+                                <p class="font-medium">
+                                    <%= member.member_id %>
+                                </p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">No. HP:</span>
+                                <p class="font-medium">
+                                    <%= member.phone %>
+                                </p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Status:</span>
+                                <p class="font-medium text-green-600">Aktif</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <a href="/member/dashboard" class="text-purple-600 hover:underline">
+                            <i class="fas fa-arrow-left mr-2"></i>Kembali ke Dashboard
+                        </a>
+                    </div>
+    </div>
+</section>

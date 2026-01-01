@@ -1,0 +1,273 @@
+<section class="py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">Pengaturan Website</h1>
+
+        <!-- Logo Settings (separate form for file upload) -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Logo Website</h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Logo Preview & Upload -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Logo</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center mb-3">
+                        <% if (settings.logo_image) { %>
+                            <img src="<%= settings.logo_image %>" alt="Logo"
+                                style="max-width: <%= settings.logo_width || 150 %>px; max-height: <%= settings.logo_height || 50 %>px;"
+                                class="mx-auto mb-2">
+                            <% } else { %>
+                                <i class="fas fa-image text-4xl text-gray-300 mb-2"></i>
+                                <p class="text-gray-500 text-sm">Belum ada logo</p>
+                                <% } %>
+                    </div>
+                    <form action="/admin/settings/logo" method="POST" enctype="multipart/form-data" class="flex gap-2">
+                        <input type="file" name="logo" accept="image/*" required
+                            class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <button type="submit"
+                            class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 text-sm">
+                            Upload
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Logo Dimensions -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Ukuran Logo di Header</label>
+                    <form action="/admin/settings" method="POST" class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-gray-600 text-sm mb-1">Lebar (px)</label>
+                                <input type="number" name="logo_width" value="<%= settings.logo_width || 150 %>"
+                                    min="50" max="300"
+                                    class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-600 text-sm mb-1">Tinggi (px)</label>
+                                <input type="number" name="logo_height" value="<%= settings.logo_height || 50 %>"
+                                    min="20" max="150"
+                                    class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+                        </div>
+                        <button type="submit"
+                            class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 text-sm">
+                            Simpan Ukuran
+                        </button>
+                    </form>
+                    <p class="text-xs text-gray-500 mt-2">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Rekomendasi: Lebar 120-200px, Tinggi 40-60px
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <form action="/admin/settings" method="POST">
+            <!-- General Settings -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Umum</h2>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Nama Website</label>
+                        <input type="text" name="site_name" value="<%= settings.site_name || '' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Tagline</label>
+                        <input type="text" name="site_tagline" value="<%= settings.site_tagline || '' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Section -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Hero Section</h2>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Judul Hero</label>
+                    <input type="text" name="hero_title" value="<%= settings.hero_title || '' %>"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Subtitle Hero</label>
+                    <textarea name="hero_subtitle" rows="2"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= settings.hero_subtitle || '' %></textarea>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">About Us</h2>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Judul About</label>
+                    <input type="text" name="about_title" value="<%= settings.about_title || '' %>"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Konten About</label>
+                    <textarea name="about_content" rows="5"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= settings.about_content || '' %></textarea>
+                </div>
+            </div>
+
+            <!-- Submit Button for General Settings -->
+            <div class="mb-6">
+                <button type="submit"
+                    class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
+                    <i class="fas fa-save mr-2"></i>Simpan Pengaturan Umum
+                </button>
+            </div>
+        </form>
+
+        <!-- About Image Upload - OUTSIDE main form to avoid nested forms -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Upload Gambar About</h2>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Gambar About Us</label>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center mb-3">
+                    <% if (settings.about_image && settings.about_image !=='/images/about.jpg' ) { %>
+                        <img src="<%= settings.about_image %>" alt="About" class="mx-auto mb-2"
+                            style="max-height: 300px;">
+                        <% } else { %>
+                            <i class="fas fa-image text-4xl text-gray-300 mb-2"></i>
+                            <p class="text-gray-500 text-sm">Belum ada gambar about</p>
+                            <% } %>
+                </div>
+                <form action="/admin/settings/about-image" method="POST" enctype="multipart/form-data"
+                    class="flex gap-2">
+                    <input type="file" name="about_image" accept="image/*" required
+                        class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <button type="submit"
+                        class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 text-sm">
+                        Upload
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <form action="/admin/settings" method="POST">
+
+            <!-- Vision & Mission -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Visi & Misi</h2>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Visi</label>
+                    <textarea name="vision" rows="3"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= settings.vision || '' %></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Misi</label>
+                    <textarea name="mission" rows="6"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"><%= settings.mission || '' %></textarea>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-code mr-1"></i>
+                        Mendukung kode HTML. Contoh: &lt;ul&gt;&lt;li&gt;Item 1&lt;/li&gt;&lt;li&gt;Item
+                        2&lt;/li&gt;&lt;/ul&gt;
+                    </p>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Fitur (3 Kolom)</h2>
+
+                <!-- Feature 1 -->
+                <div class="mb-6 pb-6 border-b">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Fitur 1: Perjuangan Hak Pekerja</h3>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Judul Fitur 1</label>
+                        <input type="text" name="feature_1_title"
+                            value="<%= settings.feature_1_title || 'Perjuangan Hak Pekerja' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Deskripsi Fitur 1</label>
+                        <textarea name="feature_1_description" rows="2"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= settings.feature_1_description || '' %></textarea>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="mb-6 pb-6 border-b">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Fitur 2: Perlindungan Hukum</h3>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Judul Fitur 2</label>
+                        <input type="text" name="feature_2_title"
+                            value="<%= settings.feature_2_title || 'Perlindungan Hukum' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Deskripsi Fitur 2</label>
+                        <textarea name="feature_2_description" rows="2"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= settings.feature_2_description || '' %></textarea>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Fitur 3: Solidaritas Berserikat</h3>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Judul Fitur 3</label>
+                        <input type="text" name="feature_3_title"
+                            value="<%= settings.feature_3_title || 'Solidaritas Berserikat' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Deskripsi Fitur 3</label>
+                        <textarea name="feature_3_description" rows="2"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= settings.feature_3_description || '' %></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Settings -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Footer</h2>
+
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Alamat</label>
+                        <input type="text" name="footer_address" value="<%= settings.footer_address || '' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Telepon</label>
+                        <input type="text" name="footer_phone" value="<%= settings.footer_phone || '' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Email</label>
+                        <input type="email" name="footer_email" value="<%= settings.footer_email || '' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Copyright</label>
+                        <input type="text" name="footer_copyright" value="<%= settings.footer_copyright || '' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button type="submit"
+                    class="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
+                    Simpan Pengaturan
+                </button>
+                <a href="/admin/dashboard"
+                    class="px-8 py-3 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition">
+                    Kembali
+                </a>
+            </div>
+        </form>
+    </div>
+</section>

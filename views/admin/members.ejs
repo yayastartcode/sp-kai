@@ -1,0 +1,122 @@
+<section class="py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Manajemen Member</h1>
+            <a href="/admin/members/create" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                <i class="fas fa-plus mr-2"></i>Tambah Member
+            </a>
+        </div>
+
+        <!-- Filter -->
+        <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+            <div class="flex gap-2 flex-wrap">
+                <a href="/admin/members"
+                    class="px-4 py-2 rounded-lg <%= currentStatus === 'all' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">
+                    Semua
+                </a>
+                <a href="/admin/members?status=pending"
+                    class="px-4 py-2 rounded-lg <%= currentStatus === 'pending' ? 'bg-yellow-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">
+                    Pending
+                </a>
+                <a href="/admin/members?status=approved"
+                    class="px-4 py-2 rounded-lg <%= currentStatus === 'approved' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">
+                    Approved
+                </a>
+                <a href="/admin/members?status=rejected"
+                    class="px-4 py-2 rounded-lg <%= currentStatus === 'rejected' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">
+                    Rejected
+                </a>
+            </div>
+        </div>
+
+        <!-- Members Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-sm font-medium text-gray-600">Foto</th>
+                            <th class="px-4 py-3 text-sm font-medium text-gray-600">Nama</th>
+                            <th class="px-4 py-3 text-sm font-medium text-gray-600">No. HP</th>
+                            <th class="px-4 py-3 text-sm font-medium text-gray-600">NIAS</th>
+                            <th class="px-4 py-3 text-sm font-medium text-gray-600">Status</th>
+                            <th class="px-4 py-3 text-sm font-medium text-gray-600">Tanggal Daftar</th>
+                            <th class="px-4 py-3 text-sm font-medium text-gray-600">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        <% if (members.length===0) { %>
+                            <tr>
+                                <td colspan="7" class="px-4 py-8 text-center text-gray-500">Tidak ada data member</td>
+                            </tr>
+                            <% } else { %>
+                                <% members.forEach(member=> { %>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                                <% if (member.photo) { %>
+                                                    <img src="<%= member.photo %>" alt=""
+                                                        class="w-full h-full object-cover">
+                                                    <% } else { %>
+                                                        <i class="fas fa-user text-gray-400"></i>
+                                                        <% } %>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 font-medium">
+                                            <%= member.name %>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <%= member.phone %>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <% if (member.nias) { %>
+                                                <span
+                                                    class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-medium">
+                                                    <%= member.nias %>
+                                                </span>
+                                                <% } else { %>
+                                                    <span class="text-gray-400">-</span>
+                                                    <% } %>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <% if (member.status==='approved' ) { %>
+                                                <span
+                                                    class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Approved</span>
+                                                <% } else if (member.status==='pending' ) { %>
+                                                    <span
+                                                        class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Pending</span>
+                                                    <% } else { %>
+                                                        <span
+                                                            class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">Rejected</span>
+                                                        <% } %>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-600">
+                                            <%= new Date(member.created_at).toLocaleDateString('id-ID') %>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex gap-2">
+                                                <a href="/admin/members/<%= member.id %>"
+                                                    class="text-purple-600 hover:underline text-sm">Detail</a>
+                                                <form action="/admin/members/<%= member.id %>/delete" method="POST"
+                                                    class="inline" onsubmit="return confirm('Hapus member ini?')">
+                                                    <button type="submit"
+                                                        class="text-red-600 hover:underline text-sm">Hapus</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <a href="/admin/dashboard" class="text-purple-600 hover:underline">
+                <i class="fas fa-arrow-left mr-2"></i>Kembali ke Dashboard
+            </a>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,90 @@
+<section class="py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">Manajemen Hero Slider</h1>
+        
+        <!-- Add Form -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Tambah Slide</h2>
+            
+            <form action="/admin/hero-slides" method="POST" enctype="multipart/form-data" class="grid md:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Gambar *</label>
+                    <input type="file" name="image" accept="image/*" required
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Judul (opsional)</label>
+                    <input type="text" name="title" placeholder="Judul slide"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Urutan</label>
+                    <input type="number" name="sort_order" value="0"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div>
+                    <button type="submit" class="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                        <i class="fas fa-plus mr-2"></i>Tambah Slide
+                    </button>
+                </div>
+            </form>
+            
+            <p class="text-sm text-gray-500 mt-3">
+                <i class="fas fa-info-circle mr-1"></i>
+                Gambar akan ditampilkan di slider hero pada halaman depan. Maksimal 5 slide aktif.
+            </p>
+        </div>
+        
+        <!-- Slides Grid -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Daftar Slide (<%= slides.length %>)</h2>
+            
+            <% if (slides.length === 0) { %>
+                <div class="text-center py-12 text-gray-500">
+                    <i class="fas fa-images text-5xl mb-4"></i>
+                    <p>Belum ada slide. Tambahkan gambar untuk ditampilkan di hero.</p>
+                </div>
+            <% } else { %>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <% slides.forEach((item, index) => { %>
+                        <div class="relative group border rounded-lg overflow-hidden">
+                            <div class="aspect-video bg-gray-100">
+                                <img src="<%= item.image %>" alt="<%= item.title || 'Slide' %>" class="w-full h-full object-cover">
+                            </div>
+                            
+                            <!-- Overlay -->
+                            <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center">
+                                <form action="/admin/hero-slides/<%= item.id %>/delete" method="POST" onsubmit="return confirm('Hapus slide ini?')">
+                                    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600">
+                                        <i class="fas fa-trash mr-1"></i> Hapus
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <!-- Info -->
+                            <div class="p-3 bg-white">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-medium text-gray-700 truncate">
+                                        <%= item.title || 'Slide ' + (index + 1) %>
+                                    </span>
+                                    <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                        #<%= item.sort_order %>
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">
+                                    <%= item.is_active ? '✓ Aktif' : '✗ Nonaktif' %>
+                                </p>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } %>
+        </div>
+        
+        <div class="mt-6">
+            <a href="/admin/dashboard" class="text-purple-600 hover:underline">
+                <i class="fas fa-arrow-left mr-2"></i>Kembali ke Dashboard
+            </a>
+        </div>
+    </div>
+</section>

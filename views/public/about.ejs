@@ -1,0 +1,37 @@
+<section class="py-12">
+    <div class="max-w-4xl mx-auto px-4">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-12">
+            <%= settings.about_title || 'Tentang Kami' %>
+        </h1>
+        
+        <div class="prose max-w-none">
+            <div class="bg-white rounded-lg shadow-md p-8">
+                <% if (settings.about_image && settings.about_image !== '/images/about.jpg') { %>
+                    <img src="<%= settings.about_image %>" alt="About" class="w-full h-64 object-cover rounded-lg mb-8">
+                <% } %>
+                
+                <div class="text-gray-700 leading-relaxed">
+                    <%- (settings.about_content || 'Deskripsi tentang organisasi.').replace(/\n/g, '<br>') %>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-12 grid md:grid-cols-3 gap-8 text-center">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <i class="fas fa-users text-4xl text-purple-600 mb-4"></i>
+                <h3 class="font-bold text-lg mb-2">Komunitas</h3>
+                <p class="text-gray-600">Bergabung dengan ribuan anggota lainnya</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <i class="fas fa-handshake text-4xl text-purple-600 mb-4"></i>
+                <h3 class="font-bold text-lg mb-2">Kerjasama</h3>
+                <p class="text-gray-600">Bersama membangun masa depan yang lebih baik</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
+                <h3 class="font-bold text-lg mb-2">Berkembang</h3>
+                <p class="text-gray-600">Terus tumbuh dan berkembang bersama</p>
+            </div>
+        </div>
+    </div>
+</section>

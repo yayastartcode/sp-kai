@@ -1,0 +1,30 @@
+{
+  "name": "serikat",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js"
+  },
+  "keywords": [
+    "company-profile",
+    "membership",
+    "nodejs",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "Company Profile & Member Portal System",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.18.2",
+    "express-validator": "^7.3.1",
+    "multer": "^2.0.2",
+    "mysql2": "^3.16.0",
+    "sharp": "^0.34.5"
+  }
+}

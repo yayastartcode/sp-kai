@@ -1,0 +1,50 @@
+<section class="py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8"><%= isEdit ? 'Edit Berita' : 'Tambah Berita' %></h1>
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <form action="<%= isEdit ? '/admin/news/' + news.id : '/admin/news' %>" method="POST" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Judul</label>
+                    <input type="text" name="title" required value="<%= isEdit ? news.title : '' %>"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Gambar</label>
+                    <% if (isEdit && news.image) { %>
+                        <div class="mb-2">
+                            <img src="<%= news.image %>" alt="" class="h-32 object-cover rounded">
+                        </div>
+                    <% } %>
+                    <input type="file" name="image" accept="image/*"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <p class="text-sm text-gray-500 mt-1"><%= isEdit ? 'Kosongkan jika tidak ingin mengganti gambar' : 'Max 5MB. Format: jpg, png, gif' %></p>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Konten</label>
+                    <textarea name="content" rows="10" required
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= isEdit ? news.content : '' %></textarea>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="is_published" <%= isEdit && news.is_published ? 'checked' : '' %>
+                            class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                        <span class="ml-2 text-gray-700">Publikasikan</span>
+                    </label>
+                </div>
+                
+                <div class="flex gap-4">
+                    <button type="submit" class="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
+                        <%= isEdit ? 'Simpan Perubahan' : 'Tambah Berita' %>
+                    </button>
+                    <a href="/admin/news" class="px-8 py-3 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition">
+                        Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

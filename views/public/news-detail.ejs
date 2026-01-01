@@ -1,0 +1,47 @@
+<section class="py-12">
+    <div class="max-w-4xl mx-auto px-4">
+        <article>
+            <% if (news.image) { %>
+                <img src="<%= news.image %>" alt="<%= news.title %>" class="w-full h-64 md:h-96 object-cover rounded-lg mb-8">
+            <% } %>
+            
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4"><%= news.title %></h1>
+            
+            <div class="flex items-center text-gray-500 mb-8">
+                <span><i class="fas fa-calendar mr-2"></i><%= new Date(news.created_at).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+                <span class="mx-4">|</span>
+                <span><i class="fas fa-eye mr-2"></i><%= news.views %> kali dibaca</span>
+            </div>
+            
+            <div class="prose max-w-none text-gray-700 leading-relaxed">
+                <%- news.content.replace(/\n/g, '<br>') %>
+            </div>
+        </article>
+        
+        <hr class="my-12">
+        
+        <% if (related && related.length > 0) { %>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Berita Lainnya</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+                <% related.forEach(item => { %>
+                    <a href="/berita/<%= item.slug %>" class="block bg-white rounded-lg shadow hover:shadow-md transition">
+                        <div class="h-32 bg-gray-200 rounded-t-lg">
+                            <% if (item.image) { %>
+                                <img src="<%= item.image %>" alt="<%= item.title %>" class="w-full h-full object-cover rounded-t-lg">
+                            <% } %>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-gray-800 hover:text-purple-600"><%= item.title %></h4>
+                        </div>
+                    </a>
+                <% }) %>
+            </div>
+        <% } %>
+        
+        <div class="mt-8">
+            <a href="/" class="text-purple-600 hover:underline">
+                <i class="fas fa-arrow-left mr-2"></i>Kembali ke Beranda
+            </a>
+        </div>
+    </div>
+</section>

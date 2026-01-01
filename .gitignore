@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Uploads (optional - uncomment if you don't want to track uploads)
+# public/uploads/
+
+# Documentation files (exclude from repo)
+DEVELOPMENT_PLAN.md
+CHECKLIST.md
+MEMBER_CARD_GUIDE.md
+DEPLOYMENT.md
+
+# Build output
+dist/
+build/
+
+# Testing
+coverage/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

@@ -1,0 +1,77 @@
+<header class="bg-white shadow-md">
+    <nav class="max-w-6xl mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+            <a href="/" class="flex items-center">
+                <% if (typeof settings !=='undefined' && settings.logo_image) { %>
+                    <img src="<%= settings.logo_image %>" alt="<%= settings.site_name || 'Logo' %>"
+                        style="width: <%= settings.logo_width || 150 %>px; height: <%= settings.logo_height || 50 %>px; object-fit: contain;">
+                    <% } else { %>
+                        <span class="text-2xl font-bold text-orange-600">
+                            <%= typeof settings !=='undefined' && settings.site_name ? settings.site_name : 'Serikat' %>
+                        </span>
+                        <% } %>
+            </a>
+
+            <button id="mobile-menu-btn" class="md:hidden text-gray-600">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+
+            <ul id="nav-menu" class="hidden md:flex items-center space-x-6">
+                <li><a href="/" class="text-gray-600 hover:text-orange-600">Beranda</a></li>
+                <li><a href="/tentang" class="text-gray-600 hover:text-orange-600">Tentang</a></li>
+                <li><a href="/galeri" class="text-gray-600 hover:text-orange-600">Galeri</a></li>
+                <li><a href="/#berita" class="text-gray-600 hover:text-orange-600">Berita</a></li>
+
+                <% if (typeof user !=='undefined' && user) { %>
+                    <% if (user.role==='admin' ) { %>
+                        <li><a href="/admin/dashboard" class="text-gray-600 hover:text-orange-600">Dashboard</a></li>
+                        <% } else { %>
+                            <li><a href="/member/dashboard" class="text-gray-600 hover:text-orange-600">Dashboard</a>
+                            </li>
+                            <% } %>
+                                <li>
+                                    <a href="/logout"
+                                        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                                        Logout
+                                    </a>
+                                </li>
+                                <% } else { %>
+                                    <li><a href="/login" class="text-gray-600 hover:text-orange-600">Login</a></li>
+                                    <li>
+                                        <a href="/register"
+                                            class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700">
+                                            Daftar
+                                        </a>
+                                    </li>
+                                    <% } %>
+            </ul>
+        </div>
+
+        <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+            <ul class="space-y-2">
+                <li><a href="/" class="block py-2 text-gray-600">Beranda</a></li>
+                <li><a href="/tentang" class="block py-2 text-gray-600">Tentang</a></li>
+                <li><a href="/galeri" class="block py-2 text-gray-600">Galeri</a></li>
+                <li><a href="/#berita" class="block py-2 text-gray-600">Berita</a></li>
+                <% if (typeof user !=='undefined' && user) { %>
+                    <% if (user.role==='admin' ) { %>
+                        <li><a href="/admin/dashboard" class="block py-2 text-gray-600">Dashboard</a></li>
+                        <% } else { %>
+                            <li><a href="/member/dashboard" class="block py-2 text-gray-600">Dashboard</a></li>
+                            <% } %>
+                                <li><a href="/logout" class="block py-2 text-red-500">Logout</a></li>
+                                <% } else { %>
+                                    <li><a href="/login" class="block py-2 text-gray-600">Login</a></li>
+                                    <li><a href="/register" class="block py-2 text-orange-600 font-semibold">Daftar</a>
+                                    </li>
+                                    <% } %>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<script>
+    document.getElementById('mobile-menu-btn').addEventListener('click', function () {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+</script>

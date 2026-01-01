@@ -1,0 +1,223 @@
+<section class="py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">Detail Member</h1>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <!-- Profile Card -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="text-center">
+                    <div
+                        class="w-24 h-24 rounded-full bg-gray-200 mx-auto flex items-center justify-center overflow-hidden">
+                        <% if (member.photo) { %>
+                            <img src="<%= member.photo %>" alt="" class="w-full h-full object-cover">
+                            <% } else { %>
+                                <i class="fas fa-user text-3xl text-gray-400"></i>
+                                <% } %>
+                    </div>
+                    <h2 class="text-xl font-semibold mt-4">
+                        <%= member.name %>
+                    </h2>
+                    <p class="text-gray-600">
+                        <%= member.phone %>
+                    </p>
+
+                    <% if (member.nias) { %>
+                        <div class="mt-2">
+                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                                NIAS: <%= member.nias %>
+                            </span>
+                        </div>
+                        <% } %>
+
+                            <div class="mt-4">
+                                <% if (member.status==='approved' ) { %>
+                                    <span class="bg-green-100 text-green-800 px-4 py-2 rounded-full">Approved</span>
+                                    <% } else if (member.status==='pending' ) { %>
+                                        <span
+                                            class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full">Pending</span>
+                                        <% } else { %>
+                                            <span class="bg-red-100 text-red-800 px-4 py-2 rounded-full">Rejected</span>
+                                            <% } %>
+                            </div>
+                </div>
+            </div>
+
+            <!-- Details & Edit Form -->
+            <div class="md:col-span-2 bg-white rounded-lg shadow-md p-6">
+                <h3 class="font-semibold text-gray-800 mb-4">Edit Informasi Member</h3>
+
+                <form action="/admin/members/<%= member.id %>/update" method="POST" enctype="multipart/form-data">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Nama</label>
+                            <input type="text" name="name" value="<%= member.name %>" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Nomor HP</label>
+                            <input type="tel" name="phone" value="<%= member.phone %>" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Email</label>
+                            <input type="email" name="email" value="<%= member.email || '' %>"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">NIAS</label>
+                            <input type="text" name="nias" value="<%= member.nias || '' %>"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Nomor Induk Anggota Serikat">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2">Alamat</label>
+                        <textarea name="address" rows="2"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= member.address || '' %></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Status</label>
+                            <select name="status"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="pending" <%=member.status==='pending' ? 'selected' : '' %>>Pending
+                                </option>
+                                <option value="approved" <%=member.status==='approved' ? 'selected' : '' %>>Approved
+                                </option>
+                                <option value="rejected" <%=member.status==='rejected' ? 'selected' : '' %>>Rejected
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Member ID</label>
+                            <input type="text" value="<%= member.member_id || 'Auto-generate' %>" disabled
+                                class="w-full px-4 py-2 border rounded-lg bg-gray-100 text-gray-600">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2">Ganti Foto</label>
+                        <input type="file" name="photo" accept="image/*"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <p class="text-sm text-gray-500 mt-1">Biarkan kosong jika tidak ingin mengganti foto</p>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                            <i class="fas fa-save mr-2"></i>Simpan Perubahan
+                        </button>
+
+                        <% if (member.status==='pending' ) { %>
+                            <a href="javascript:void(0)" onclick="document.getElementById('approveForm').submit()"
+                                class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                                <i class="fas fa-check mr-2"></i>Approve
+                            </a>
+                            <% } %>
+
+                                <% if (member.status==='approved' ) { %>
+                                    <a href="javascript:void(0)"
+                                        onclick="document.getElementById('generateCardForm').submit()"
+                                        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                                        <i class="fas fa-id-card mr-2"></i>
+                                        <%= member.card_generated_at ? 'Regenerate' : 'Generate' %> Kartu
+                                    </a>
+                                    <% } %>
+                    </div>
+                </form>
+
+                <!-- Hidden Forms -->
+                <form id="approveForm" action="/admin/members/<%= member.id %>/approve" method="POST" class="hidden">
+                </form>
+                <form id="generateCardForm" action="/admin/members/<%= member.id %>/generate-card" method="POST"
+                    class="hidden"></form>
+
+                <!-- Card Preview -->
+                <% if (card && card.card_image) { %>
+                    <div class="mt-6 pt-6 border-t">
+                        <h4 class="font-semibold text-gray-800 mb-4">Preview Kartu</h4>
+
+                        <!-- Card Tabs -->
+                        <div class="mb-4">
+                            <div class="flex border-b border-gray-200">
+                                <button onclick="showAdminCard('front')" id="admin-tab-front"
+                                    class="px-4 py-2 border-b-2 border-orange-500 text-orange-600 font-medium">
+                                    <i class="fas fa-id-card mr-1"></i> Depan
+                                </button>
+                                <% if (card.card_image_back) { %>
+                                    <button onclick="showAdminCard('back')" id="admin-tab-back"
+                                        class="px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+                                        <i class="fas fa-id-card-alt mr-1"></i> Belakang
+                                    </button>
+                                    <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Card Images -->
+                        <div class="bg-gray-100 p-4 rounded-lg flex justify-center">
+                            <img id="admin-card-front" src="<%= card.card_image %>?t=<%= Date.now() %>"
+                                alt="Kartu Depan" class="max-w-full h-auto shadow-lg rounded-lg"
+                                style="max-width: 500px;">
+                            <% if (card.card_image_back) { %>
+                                <img id="admin-card-back" src="<%= card.card_image_back %>?t=<%= Date.now() %>"
+                                    alt="Kartu Belakang" class="max-w-full h-auto shadow-lg rounded-lg hidden"
+                                    style="max-width: 500px;">
+                                <% } %>
+                        </div>
+                    </div>
+
+                    <script>
+                        function showAdminCard(side) {
+                            const frontCard = document.getElementById('admin-card-front');
+                            const backCard = document.getElementById('admin-card-back');
+                            const tabFront = document.getElementById('admin-tab-front');
+                            const tabBack = document.getElementById('admin-tab-back');
+
+                            if (side === 'front') {
+                                frontCard.classList.remove('hidden');
+                                if (backCard) backCard.classList.add('hidden');
+                                tabFront.classList.add('border-orange-500', 'text-orange-600');
+                                tabFront.classList.remove('border-transparent', 'text-gray-500');
+                                if (tabBack) {
+                                    tabBack.classList.remove('border-orange-500', 'text-orange-600');
+                                    tabBack.classList.add('border-transparent', 'text-gray-500');
+                                }
+                            } else {
+                                frontCard.classList.add('hidden');
+                                if (backCard) backCard.classList.remove('hidden');
+                                tabFront.classList.remove('border-orange-500', 'text-orange-600');
+                                tabFront.classList.add('border-transparent', 'text-gray-500');
+                                if (tabBack) {
+                                    tabBack.classList.add('border-orange-500', 'text-orange-600');
+                                    tabBack.classList.remove('border-transparent', 'text-gray-500');
+                                }
+                            }
+                        }
+                    </script>
+                    <% } %>
+
+                        <!-- Delete Section -->
+                        <div class="mt-6 pt-6 border-t">
+                            <h4 class="font-semibold text-red-600 mb-4">Zona Berbahaya</h4>
+                            <form action="/admin/members/<%= member.id %>/delete" method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus member ini? Tindakan ini tidak dapat dibatalkan.')">
+                                <button type="submit"
+                                    class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                                    <i class="fas fa-trash mr-2"></i>Hapus Member
+                                </button>
+                            </form>
+                        </div>
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <a href="/admin/members" class="text-purple-600 hover:underline">
+                <i class="fas fa-arrow-left mr-2"></i>Kembali ke Daftar Member
+            </a>
+        </div>
+    </div>
+</section>
