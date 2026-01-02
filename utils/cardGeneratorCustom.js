@@ -43,56 +43,79 @@ const generate = async (member, settings) => {
 
     // Determine positions based on card size (assuming 1200x800 or similar landscape)
     // Profile picture on LEFT side - SQUARE (1:1 ratio)
-    const profileWidth = Math.round(cardWidth * 0.30); // 30% of card width (1.2x larger)
+    const profileWidth = Math.round(cardWidth * 0.175); // 17.5% of card width (reduced 30%)
     const profileHeight = profileWidth; // Same as width for 1:1 ratio (SQUARE)
     const profileX = Math.round(cardWidth * 0.04); // 4% from left (moved left, align with logo)
     const profileY = Math.round(cardHeight * 0.25 + 15); // 25% from top + 15px margin down
     const borderRadius = Math.round(profileWidth * 0.15); // 15% border radius for rounded corners
+    const borderWidth = 5; // White border width in pixels
 
     // Text area in MIDDLE/CENTER - shifted right & up
     const textX = Math.round(cardWidth / 2 + cardWidth * 0.15); // Center + 15% shift right
-    const nameY = Math.round(cardHeight * 0.48); // 48% down - name
-    const niasY = Math.round(cardHeight * 0.56); // 56% down - NIAS (closer to name, ~10px margin)
+    const nameY = Math.round(cardHeight * 0.43); // 43% down - name
+    const niasY = Math.round(cardHeight * 0.51); // 51% down - NIAS
 
     let compositeArray = [{ input: backgroundPath, top: 0, left: 0 }];
 
-    // Add member photo if exists
+    // Add member photo - use default avatar if no photo exists
+    const defaultAvatarPath = path.join(templateDir, "avatar.png");
+    let photoToUse = null;
+
     if (memberPhotoPath && fs.existsSync(memberPhotoPath)) {
+      photoToUse = memberPhotoPath;
+    } else if (fs.existsSync(defaultAvatarPath)) {
+      photoToUse = defaultAvatarPath;
+    }
+
+    if (photoToUse) {
       try {
-        // Resize and crop member photo to fit profile area with rounded corners
-        let memberPhotoResized = await sharp(memberPhotoPath)
-          .resize(profileWidth, profileHeight, {
+        // Calculate inner photo size (smaller to accommodate border)
+        const innerWidth = profileWidth - (borderWidth * 2);
+        const innerHeight = profileHeight - (borderWidth * 2);
+        const innerRadius = Math.round(innerWidth * 0.15);
+
+        // Resize and crop member photo to fit inner area
+        const memberPhotoResized = await sharp(photoToUse)
+          .resize(innerWidth, innerHeight, {
             fit: "cover",
             position: "center",
           })
+          .png()
           .toBuffer();
 
-        // Create yellow background with rounded corners
-        const yellowBg = Buffer.from(
-          `<svg width="${profileWidth}" height="${profileHeight}">
-            <rect width="${profileWidth}" height="${profileHeight}" rx="${borderRadius}" ry="${borderRadius}" fill="#FCE330"/>
+        // Create inner photo with rounded corners mask
+        const innerMaskSvg = Buffer.from(
+          `<svg width="${innerWidth}" height="${innerHeight}">
+            <rect width="${innerWidth}" height="${innerHeight}" rx="${innerRadius}" ry="${innerRadius}" fill="white"/>
           </svg>`
         );
 
-        // Composite yellow background first
-        let photoWithYellowBg = await sharp(yellowBg)
-          .composite([{ input: memberPhotoResized }])
+        // Apply rounded corners to inner photo
+        const photoRounded = await sharp(memberPhotoResized)
+          .ensureAlpha()
+          .composite([{ input: innerMaskSvg, blend: "dest-in" }])
+          .png()
           .toBuffer();
 
-        // Create mask for rounded corners
-        const maskSvg = Buffer.from(
+        // Create white border frame (larger container with rounded corners)
+        const borderFrameSvg = Buffer.from(
           `<svg width="${profileWidth}" height="${profileHeight}">
             <rect width="${profileWidth}" height="${profileHeight}" rx="${borderRadius}" ry="${borderRadius}" fill="white"/>
           </svg>`
         );
 
-        // Apply mask to get rounded corners
-        memberPhotoResized = await sharp(photoWithYellowBg)
-          .composite([{ input: maskSvg, blend: "dest-in" }])
+        // Place rounded photo on top of white border frame
+        const photoWithBorder = await sharp(borderFrameSvg)
+          .composite([{
+            input: photoRounded,
+            top: borderWidth,
+            left: borderWidth
+          }])
+          .png()
           .toBuffer();
 
         compositeArray.push({
-          input: memberPhotoResized,
+          input: photoWithBorder,
           top: profileY,
           left: profileX,
         });
@@ -101,8 +124,8 @@ const generate = async (member, settings) => {
         if (fs.existsSync(overlayPath)) {
           try {
             const overlayMeta = await sharp(overlayPath).metadata();
-            // Resize overlay to 82.5% of original size (1.5x larger than before)
-            const overlayScale = 0.825;
+            // Resize overlay to 66% of original size (20% smaller than before)
+            const overlayScale = 0.66;
             const overlayWidth = Math.round(overlayMeta.width * overlayScale);
             const overlayHeight = Math.round(overlayMeta.height * overlayScale);
 
@@ -139,10 +162,45 @@ const generate = async (member, settings) => {
     const nameText = (member.name || "Nama Member").toUpperCase();
     const niasText = `NIAS: ${member.nias || "Belum ada"}`;
 
-    // Name text - WHITE, 55px BOLD, Arial, centered
+    // Font sizes
+    const nameFontSize = 45;
+    const niasFontSize = 34;
+
+    // Estimate text widths (approx 0.6 of font size per character for bold Arial)
+    const nameTextWidth = nameText.length * (nameFontSize * 0.65);
+    const niasTextWidth = niasText.length * (niasFontSize * 0.65);
+
+    // Use the wider text to determine box width
+    const maxTextWidth = Math.max(nameTextWidth, niasTextWidth);
+
+    // Border settings with dynamic width
+    const textPadding = 25; // Padding around text (left + right = 50px total)
+    const textBoxWidth = Math.round(maxTextWidth + (textPadding * 2));
+    const textBoxHeight = Math.round(nameFontSize + niasFontSize + 70); // Height for both texts + spacing
+    const textBoxX = textX - (textBoxWidth / 2); // Center horizontally at textX
+    const textBoxY = nameY - nameFontSize; // Start above name position
+    const textBoxRadius = 12; // Border radius
+    const textBoxBorderWidth = 3; // Border stroke width
+
+    // White border container for Name and NIAS
+    const textBorderSvg = Buffer.from(`
+            <svg width="${cardWidth}" height="${cardHeight}" xmlns="http://www.w3.org/2000/svg">
+                <rect x="${textBoxX}" y="${textBoxY}" width="${textBoxWidth}" height="${textBoxHeight}" 
+                      rx="${textBoxRadius}" ry="${textBoxRadius}" 
+                      fill="none" stroke="white" stroke-width="${textBoxBorderWidth}"/>
+            </svg>
+        `);
+
+    compositeArray.push({
+      input: textBorderSvg,
+      top: 0,
+      left: 0,
+    });
+
+    // Name text - inside the border box
     const nameSvg = Buffer.from(`
             <svg width="${cardWidth}" height="${cardHeight}" xmlns="http://www.w3.org/2000/svg">
-                <text x="${textX}" y="${nameY}" font-family="Arial, sans-serif" font-size="55" font-weight="bold" fill="#7A7A7A" text-anchor="middle" dominant-baseline="middle">${escapeXml(
+                <text x="${textX}" y="${nameY}" font-family="Arial, sans-serif" font-size="${nameFontSize}" font-weight="bold" fill="#7A7A7A" text-anchor="middle" dominant-baseline="middle">${escapeXml(
       nameText
     )}</text>
             </svg>
@@ -154,10 +212,10 @@ const generate = async (member, settings) => {
       left: 0,
     });
 
-    // NIAS text - DARK ORANGE, 34px BOLD, Arial, centered
+    // NIAS text - DARK ORANGE
     const niasSvg = Buffer.from(`
             <svg width="${cardWidth}" height="${cardHeight}" xmlns="http://www.w3.org/2000/svg">
-                <text x="${textX}" y="${niasY}" font-family="Arial, sans-serif" font-size="34" font-weight="bold" fill="#cc5500" text-anchor="middle" dominant-baseline="middle">${escapeXml(
+                <text x="${textX}" y="${niasY}" font-family="Arial, sans-serif" font-size="${niasFontSize}" font-weight="bold" fill="#cc5500" text-anchor="middle" dominant-baseline="middle">${escapeXml(
       niasText
     )}</text>
             </svg>

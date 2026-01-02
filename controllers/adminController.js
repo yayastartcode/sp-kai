@@ -144,28 +144,79 @@ exports.uploadAboutImage = async (req, res) => {
     }
 };
 
+exports.uploadChairmanPhoto = async (req, res) => {
+    try {
+        if (!req.file) {
+            req.session.error = 'File foto harus diupload';
+            return res.redirect('/admin/settings');
+        }
+
+        // Get old chairman photo to delete
+        const [oldPhoto] = await db.query('SELECT setting_value FROM site_settings WHERE setting_key = ?', ['chairman_photo']);
+        if (oldPhoto[0]?.setting_value) {
+            const oldPath = path.join(__dirname, '..', 'public', oldPhoto[0].setting_value);
+            if (fs.existsSync(oldPath)) {
+                fs.unlinkSync(oldPath);
+            }
+        }
+
+        const photoPath = `/uploads/about/${req.file.filename}`;
+
+        await db.query('UPDATE site_settings SET setting_value = ? WHERE setting_key = ?', [photoPath, 'chairman_photo']);
+
+        req.session.success = 'Foto Ketua Umum berhasil diupload';
+        res.redirect('/admin/settings');
+    } catch (error) {
+        console.error('uploadChairmanPhoto error:', error);
+        req.session.error = 'Terjadi kesalahan saat upload foto';
+        res.redirect('/admin/settings');
+    }
+};
+
 exports.members = async (req, res) => {
     try {
         const settings = await getSettings();
         const status = req.query.status || 'all';
+        const search = req.query.search || '';
+        const page = parseInt(req.query.page) || 1;
+        const limit = 20; // Members per page
+        const offset = (page - 1) * limit;
 
-        let query = 'SELECT * FROM users WHERE role = ?';
+        let baseQuery = 'FROM users WHERE role = ?';
         let params = ['member'];
 
+        // Status filter
         if (status !== 'all') {
-            query += ' AND status = ?';
+            baseQuery += ' AND status = ?';
             params.push(status);
         }
 
-        query += ' ORDER BY created_at DESC';
+        // Search filter
+        if (search) {
+            baseQuery += ' AND (name LIKE ? OR nipp LIKE ? OR nias LIKE ?)';
+            const searchTerm = `%${search}%`;
+            params.push(searchTerm, searchTerm, searchTerm);
+        }
 
-        const [members] = await db.query(query, params);
+        // Get total count for pagination
+        const [countResult] = await db.query(`SELECT COUNT(*) as total ${baseQuery}`, params);
+        const totalMembers = countResult[0].total;
+        const totalPages = Math.ceil(totalMembers / limit);
+
+        // Get paginated members
+        const query = `SELECT * ${baseQuery} ORDER BY created_at DESC LIMIT ? OFFSET ?`;
+        const [members] = await db.query(query, [...params, limit, offset]);
 
         res.render('admin/members', {
             title: 'Manajemen Member',
             settings,
             members,
-            currentStatus: status
+            currentStatus: status,
+            search,
+            currentPage: page,
+            totalPages,
+            totalMembers,
+            limit
         });
     } catch (error) {
         console.error(error);
@@ -250,17 +301,17 @@ exports.createMemberPage = async (req, res) => {
 
 exports.createMember = async (req, res) => {
     try {
-        const { phone, password, name, email, address, nias, status } = req.body;
+        const { nipp, password, name, phone, address, nias, asal, status } = req.body;
 
-        if (!phone || !password || !name) {
-            req.session.error = 'Nama, nomor HP, dan password harus diisi';
+        if (!nipp || !password || !name) {
+            req.session.error = 'Nama, NIPP, dan password harus diisi';
             return res.redirect('/admin/members/create');
         }
 
-        // Check if phone already exists
-        const [existing] = await db.query('SELECT id FROM users WHERE phone = ?', [phone]);
-        if (existing.length > 0) {
-            req.session.error = 'Nomor HP sudah terdaftar';
+        // Check if NIPP already exists
+        const [existingNipp] = await db.query('SELECT id FROM users WHERE nipp = ?', [nipp.trim()]);
+        if (existingNipp.length > 0) {
+            req.session.error = 'NIPP sudah terdaftar';
             return res.redirect('/admin/members/create');
         }
 
@@ -277,9 +328,12 @@ exports.createMember = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const photo = req.file ? `/uploads/members/${req.file.filename}` : null;
 
+        // Generate member_id
+        const memberId = `MBR${String(Date.now()).slice(-8)}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+
         await db.query(
-            'INSERT INTO users (phone, password, name, email, address, photo, nias, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [phone, hashedPassword, name, email || null, address || null, photo, nias && nias.trim() ? nias.trim() : null, 'member', status || 'pending']
+            'INSERT INTO users (nipp, password, name, phone, address, photo, nias, asal, role, status, member_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [nipp.trim(), hashedPassword, name, phone || null, address || null, photo, nias && nias.trim() ? nias.trim() : null, asal || null, 'member', status || 'pending', memberId]
         );
 
         req.session.success = 'Member berhasil ditambahkan';
@@ -293,14 +347,16 @@ exports.createMember = async (req, res) => {
 
 exports.updateMember = async (req, res) => {
     try {
-        const { phone, name, email, address, nias, status } = req.body;
+        const { nipp, phone, name, address, nias, asal, status } = req.body;
         const memberId = req.params.id;
 
-        // Check if phone already exists for other users
-        const [existingPhone] = await db.query('SELECT id FROM users WHERE phone = ? AND id != ?', [phone, memberId]);
-        if (existingPhone.length > 0) {
-            req.session.error = 'Nomor HP sudah digunakan oleh user lain';
-            return res.redirect('/admin/members/' + memberId);
+        // Check if NIPP already exists for other users
+        if (nipp && nipp.trim()) {
+            const [existingNipp] = await db.query('SELECT id FROM users WHERE nipp = ? AND id != ?', [nipp.trim(), memberId]);
+            if (existingNipp.length > 0) {
+                req.session.error = 'NIPP sudah digunakan oleh user lain';
+                return res.redirect('/admin/members/' + memberId);
+            }
         }
 
         // Check if NIAS already exists for other users (if provided)
@@ -312,8 +368,8 @@ exports.updateMember = async (req, res) => {
             }
         }
 
-        let updateQuery = 'UPDATE users SET phone = ?, name = ?, email = ?, address = ?, nias = ?, status = ?';
-        let params = [phone, name, email || null, address || null, nias && nias.trim() ? nias.trim() : null, status];
+        let updateQuery = 'UPDATE users SET nipp = ?, phone = ?, name = ?, address = ?, nias = ?, asal = ?, status = ?';
+        let params = [nipp && nipp.trim() ? nipp.trim() : null, phone || null, name, address || null, nias && nias.trim() ? nias.trim() : null, asal || null, status];
 
         // Add photo if uploaded
         if (req.file) {
@@ -426,6 +482,89 @@ exports.generateCard = async (req, res) => {
     } catch (error) {
         console.error(error);
         req.session.error = 'Terjadi kesalahan saat membuat kartu: ' + error.message;
+        res.redirect('/admin/members/' + req.params.id);
+    }
+};
+
+// Download card for admin
+exports.downloadCard = async (req, res) => {
+    try {
+        const memberId = req.params.id;
+
+        // Get member and card data
+        const [members] = await db.query('SELECT * FROM users WHERE id = ?', [memberId]);
+        if (members.length === 0) {
+            req.session.error = 'Member tidak ditemukan';
+            return res.redirect('/admin/members');
+        }
+
+        const member = members[0];
+        const [cards] = await db.query('SELECT * FROM member_cards WHERE user_id = ? ORDER BY created_at DESC LIMIT 1', [memberId]);
+
+        if (cards.length === 0 || !cards[0].card_image) {
+            req.session.error = 'Kartu tidak ditemukan';
+            return res.redirect('/admin/members/' + memberId);
+        }
+
+        const card = cards[0];
+        const frontPath = path.join(__dirname, '..', 'public', card.card_image);
+        const fileIdentifier = member.nias || member.nipp || member.member_id;
+
+        if (!fs.existsSync(frontPath)) {
+            req.session.error = 'File kartu tidak ditemukan';
+            return res.redirect('/admin/members/' + memberId);
+        }
+
+        // If back card exists, combine them
+        if (card.card_image_back) {
+            const backPath = path.join(__dirname, '..', 'public', card.card_image_back);
+
+            if (fs.existsSync(backPath)) {
+                const sharp = require('sharp');
+
+                // Get dimensions of front card
+                const frontMeta = await sharp(frontPath).metadata();
+                const cardWidth = frontMeta.width;
+                const cardHeight = frontMeta.height;
+
+                // Margin between cards (in pixels)
+                const margin = 40;
+
+                // Load both images
+                const frontBuffer = await sharp(frontPath).toBuffer();
+                const backBuffer = await sharp(backPath)
+                    .resize(cardWidth, cardHeight, { fit: 'fill' })
+                    .toBuffer();
+
+                // Combine vertically (top-bottom) with margin
+                const combinedBuffer = await sharp({
+                    create: {
+                        width: cardWidth,
+                        height: (cardHeight * 2) + margin,
+                        channels: 4,
+                        background: { r: 255, g: 255, b: 255, alpha: 1 }
+                    }
+                })
+                    .composite([
+                        { input: frontBuffer, top: 0, left: 0 },
+                        { input: backBuffer, top: cardHeight + margin, left: 0 }
+                    ])
+                    .png()
+                    .toBuffer();
+
+                // Send combined image
+                res.setHeader('Content-Type', 'image/png');
+                res.setHeader('Content-Disposition', `attachment; filename=kartu-${fileIdentifier}.png`);
+                return res.send(combinedBuffer);
+            }
+        }
+
+        // Fallback: just download front card
+        res.download(frontPath, `kartu-${fileIdentifier}.png`);
+
+    } catch (error) {
+        console.error(error);
+        req.session.error = 'Terjadi kesalahan saat download kartu';
         res.redirect('/admin/members/' + req.params.id);
     }
 };

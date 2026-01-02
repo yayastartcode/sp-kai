@@ -150,6 +150,78 @@
             </div>
         </div>
 
+        <!-- Chairman Settings - Photo Upload -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Sambutan Ketua Umum</h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Chairman Photo -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Foto Ketua Umum</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center mb-3">
+                        <% if (settings.chairman_photo) { %>
+                            <img src="<%= settings.chairman_photo %>" alt="Ketua Umum" class="mx-auto mb-2"
+                                style="max-height: 200px;">
+                            <% } else { %>
+                                <i class="fas fa-user-tie text-4xl text-gray-300 mb-2"></i>
+                                <p class="text-gray-500 text-sm">Belum ada foto</p>
+                                <% } %>
+                    </div>
+                    <form action="/admin/settings/chairman-photo" method="POST" enctype="multipart/form-data"
+                        class="flex gap-2">
+                        <input type="file" name="chairman_photo" accept="image/*" required
+                            class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <button type="submit"
+                            class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 text-sm">
+                            Upload
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Chairman Name & Title -->
+                <div>
+                    <form action="/admin/settings" method="POST" class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Nama Ketua Umum</label>
+                            <input type="text" name="chairman_name" value="<%= settings.chairman_name || '' %>"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Nama lengkap dengan gelar">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Jabatan & Periode</label>
+                            <input type="text" name="chairman_title" value="<%= settings.chairman_title || '' %>"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Ketua Umum ... (2022-2025)">
+                        </div>
+                        <button type="submit"
+                            class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 text-sm">
+                            Simpan Nama & Jabatan
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Chairman Welcome Text (HTML) -->
+            <div class="mt-6">
+                <form action="/admin/settings" method="POST">
+                    <label class="block text-gray-700 font-medium mb-2">
+                        Teks Sambutan Ketua Umum
+                        <span class="text-sm text-gray-500 font-normal">(Mendukung HTML: &lt;p&gt;, &lt;br&gt;,
+                            &lt;strong&gt;, &lt;em&gt;)</span>
+                    </label>
+                    <textarea name="chairman_welcome" rows="10"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"><%= settings.chairman_welcome || '' %></textarea>
+                    <p class="text-xs text-gray-500 mt-1 mb-3">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Gunakan &lt;p&gt;...&lt;/p&gt; untuk paragraf, &lt;strong&gt;...&lt;/strong&gt; untuk bold
+                    </p>
+                    <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                        <i class="fas fa-save mr-2"></i>Simpan Sambutan
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <form action="/admin/settings" method="POST">
 
             <!-- Vision & Mission -->

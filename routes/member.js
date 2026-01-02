@@ -17,6 +17,7 @@ router.post('/profile', uploadMember.single('photo'), memberController.updatePro
 // Member Card (only for approved members)
 router.get('/card', isApprovedMember, memberController.card);
 router.get('/card/download', isApprovedMember, memberController.downloadCard);
+router.post('/card/generate', isApprovedMember, memberController.generateCard);
 router.post('/card/regenerate', isApprovedMember, memberController.regenerateCard);
 
 module.exports = router;

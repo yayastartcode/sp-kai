@@ -18,8 +18,14 @@
                             <%= member.name %>
                         </h2>
                         <p class="text-gray-600">
-                            <%= member.phone %>
+                            NIPP: <%= member.nipp || '-' %>
                         </p>
+                        <% if (member.asal) { %>
+                            <p class="text-gray-500 text-sm">
+                                <i class="fas fa-building mr-1"></i>
+                                <%= member.asal %>
+                            </p>
+                            <% } %>
                     </div>
                 </div>
 

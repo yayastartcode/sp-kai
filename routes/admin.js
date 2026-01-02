@@ -15,6 +15,7 @@ router.get('/settings', adminController.settings);
 router.post('/settings', adminController.updateSettings);
 router.post('/settings/logo', uploadGallery.single('logo'), adminController.uploadLogo);
 router.post('/settings/about-image', uploadAbout.single('about_image'), adminController.uploadAboutImage);
+router.post('/settings/chairman-photo', uploadAbout.single('chairman_photo'), adminController.uploadChairmanPhoto);
 
 // Members Management
 router.get('/members', adminController.members);
@@ -25,6 +26,7 @@ router.post('/members/:id/update', uploadMember.single('photo'), adminController
 router.post('/members/:id/approve', adminController.approveMember);
 router.post('/members/:id/reject', adminController.rejectMember);
 router.post('/members/:id/generate-card', adminController.generateCard);
+router.get('/members/:id/download-card', adminController.downloadCard);
 router.post('/members/:id/delete', adminController.deleteMember);
 
 // Hero Slides Management

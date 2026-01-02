@@ -31,19 +31,19 @@ exports.loginPage = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { phone, password } = req.body;
+        const { nipp, password } = req.body;
 
         // Validate input
-        if (!phone || !password) {
-            req.session.error = 'Nomor HP dan password harus diisi';
+        if (!nipp || !password) {
+            req.session.error = 'NIPP dan password harus diisi';
             return res.redirect('/login');
         }
 
-        // Find user
-        const [rows] = await db.query('SELECT * FROM users WHERE phone = ?', [phone]);
+        // Find user by NIPP
+        const [rows] = await db.query('SELECT * FROM users WHERE nipp = ?', [nipp]);
 
         if (rows.length === 0) {
-            req.session.error = 'Nomor HP tidak terdaftar';
+            req.session.error = 'NIPP tidak terdaftar';
             return res.redirect('/login');
         }
 
@@ -59,14 +59,15 @@ exports.login = async (req, res) => {
         // Set session
         req.session.user = {
             id: user.id,
+            nipp: user.nipp,
             phone: user.phone,
             name: user.name,
-            email: user.email,
             photo: user.photo,
             role: user.role,
             status: user.status,
             member_id: user.member_id,
-            nias: user.nias
+            nias: user.nias,
+            asal: user.asal
         };
 
         req.session.success = 'Login berhasil';
@@ -104,11 +105,11 @@ exports.registerPage = async (req, res) => {
 
 exports.register = async (req, res) => {
     try {
-        const { phone, password, password_confirm, name, email, address, nias } = req.body;
+        const { nipp, password, password_confirm, name, phone, address, nias, asal } = req.body;
 
         // Validate input
-        if (!phone || !password || !name) {
-            req.session.error = 'Nomor HP, password, dan nama harus diisi';
+        if (!nipp || !password || !name) {
+            req.session.error = 'NIPP, password, dan nama harus diisi';
             return res.redirect('/register');
         }
 
@@ -122,10 +123,10 @@ exports.register = async (req, res) => {
             return res.redirect('/register');
         }
 
-        // Check if phone already exists
-        const [existing] = await db.query('SELECT id FROM users WHERE phone = ?', [phone]);
-        if (existing.length > 0) {
-            req.session.error = 'Nomor HP sudah terdaftar';
+        // Check if NIPP already exists
+        const [existingNipp] = await db.query('SELECT id FROM users WHERE nipp = ?', [nipp.trim()]);
+        if (existingNipp.length > 0) {
+            req.session.error = 'NIPP sudah terdaftar';
             return res.redirect('/register');
         }
 
@@ -146,8 +147,8 @@ exports.register = async (req, res) => {
 
         // Insert user
         await db.query(
-            'INSERT INTO users (phone, password, name, email, address, photo, nias, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [phone, hashedPassword, name, email || null, address || null, photo, nias && nias.trim() ? nias.trim() : null, 'member', 'pending']
+            'INSERT INTO users (nipp, password, name, phone, address, photo, nias, asal, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [nipp.trim(), hashedPassword, name, phone || null, address || null, photo, nias && nias.trim() ? nias.trim() : null, asal || null, 'member', 'pending']
         );
 
         req.session.success = 'Pendaftaran berhasil! Silakan login dan tunggu persetujuan admin.';

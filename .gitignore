@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 
+#script
+scripts/
+
 # Environment
 .env
 .env.local

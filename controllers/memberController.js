@@ -50,14 +50,14 @@ exports.profile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        const { name, email, address, current_password, new_password } = req.body;
+        const { name, phone, asal, address, current_password, new_password } = req.body;
         const userId = req.session.user.id;
 
         // Get current user data
         const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
         const user = rows[0];
 
-        let updateFields = { name, email: email || null, address: address || null };
+        let updateFields = { name, phone: phone || null, asal: asal || null, address: address || null };
 
         // Handle photo upload
         if (req.file) {
@@ -93,7 +93,8 @@ exports.updateProfile = async (req, res) => {
 
         // Update session
         req.session.user.name = name;
-        req.session.user.email = email;
+        req.session.user.phone = phone;
+        req.session.user.asal = asal;
         if (updateFields.photo) {
             req.session.user.photo = updateFields.photo;
         }
@@ -124,6 +125,60 @@ exports.card = async (req, res) => {
         console.error(error);
         req.session.error = 'Terjadi kesalahan';
         res.redirect('/member/dashboard');
+    }
+};
+
+// Generate card for first time
+exports.generateCard = async (req, res) => {
+    try {
+        const cardGeneratorCustom = require('../utils/cardGeneratorCustom');
+
+        // Get member data
+        const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [req.session.user.id]);
+
+        if (rows.length === 0) {
+            req.session.error = 'Data member tidak ditemukan';
+            return res.redirect('/member/card');
+        }
+
+        const member = rows[0];
+
+        if (member.status !== 'approved') {
+            req.session.error = 'Kartu hanya bisa di-generate untuk member yang sudah disetujui';
+            return res.redirect('/member/card');
+        }
+
+        // Check if card already exists
+        const [existingCard] = await db.query('SELECT id FROM member_cards WHERE user_id = ?', [member.id]);
+        if (existingCard.length > 0) {
+            req.session.error = 'Kartu sudah pernah di-generate, gunakan tombol Regenerate';
+            return res.redirect('/member/card');
+        }
+
+        // Generate card
+        const settings = await getSettings();
+        const cardResult = await cardGeneratorCustom.generate(member, settings);
+
+        // Save card info to database
+        const validFrom = new Date();
+        const validUntil = new Date();
+        validUntil.setFullYear(validUntil.getFullYear() + 1);
+
+        await db.query(
+            `INSERT INTO member_cards (user_id, card_number, card_image, card_image_back, valid_from, valid_until) 
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [member.id, member.member_id, cardResult.frontImagePath, cardResult.backImagePath, validFrom, validUntil]
+        );
+
+        await db.query('UPDATE users SET card_generated_at = NOW() WHERE id = ?', [member.id]);
+
+        req.session.success = 'Kartu anggota berhasil di-generate!';
+        res.redirect('/member/card');
+
+    } catch (error) {
+        console.error(error);
+        req.session.error = 'Terjadi kesalahan saat generate kartu';
+        res.redirect('/member/card');
     }
 };
 

@@ -93,13 +93,22 @@
                 }
             </script>
             <% } else { %>
-                <!-- No Card Yet -->
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
-                    <i class="fas fa-id-card text-5xl text-yellow-500 mb-4"></i>
-                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Kartu Belum Tersedia</h2>
-                    <p class="text-gray-600">
-                        Kartu anggota Anda sedang dalam proses pembuatan oleh admin.
-                        Silakan cek kembali nanti.
+                <!-- No Card Yet - Show Generate Button -->
+                <div class="bg-white rounded-lg shadow-md p-8 text-center mb-6">
+                    <i class="fas fa-id-card text-6xl text-orange-500 mb-4"></i>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-2">Kartu Anggota Belum Ada</h2>
+                    <p class="text-gray-600 mb-6">
+                        Klik tombol di bawah untuk membuat kartu anggota Anda.
+                    </p>
+                    <form action="/member/card/generate" method="POST">
+                        <button type="submit"
+                            class="bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-700 transition">
+                            <i class="fas fa-magic mr-2"></i>Generate Kartu Anggota
+                        </button>
+                    </form>
+                    <p class="text-sm text-gray-500 mt-4">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Kartu akan dibuat dengan data profil Anda saat ini
                     </p>
                 </div>
                 <% } %>
@@ -115,15 +124,27 @@
                                 </p>
                             </div>
                             <div>
-                                <span class="text-gray-500">ID Member:</span>
+                                <span class="text-gray-500">NIPP:</span>
                                 <p class="font-medium">
-                                    <%= member.member_id %>
+                                    <%= member.nipp || '-' %>
+                                </p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">NIAS:</span>
+                                <p class="font-medium text-purple-600">
+                                    <%= member.nias || 'Belum ada' %>
+                                </p>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">Kantor Asal:</span>
+                                <p class="font-medium">
+                                    <%= member.asal || '-' %>
                                 </p>
                             </div>
                             <div>
                                 <span class="text-gray-500">No. HP:</span>
                                 <p class="font-medium">
-                                    <%= member.phone %>
+                                    <%= member.phone || '-' %>
                                 </p>
                             </div>
                             <div>
