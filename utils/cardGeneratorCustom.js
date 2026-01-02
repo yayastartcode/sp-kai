@@ -43,10 +43,10 @@ const generate = async (member, settings) => {
 
     // Determine positions based on card size (assuming 1200x800 or similar landscape)
     // Profile picture on LEFT side - SQUARE (1:1 ratio)
-    const profileWidth = Math.round(cardWidth * 0.175); // 17.5% of card width (reduced 30%)
+    const profileWidth = Math.round(cardWidth * 0.225); // 22.5% of card width (increased 5%)
     const profileHeight = profileWidth; // Same as width for 1:1 ratio (SQUARE)
-    const profileX = Math.round(cardWidth * 0.04); // 4% from left (moved left, align with logo)
-    const profileY = Math.round(cardHeight * 0.25 + 15); // 25% from top + 15px margin down
+    const profileX = Math.round(cardWidth * 0.06); // 6% from left (moved left 3%)
+    const profileY = Math.round(cardHeight * 0.32 + 15); // 32% from top (moved up 3%)
     const borderRadius = Math.round(profileWidth * 0.15); // 15% border radius for rounded corners
     const borderWidth = 5; // White border width in pixels
 
