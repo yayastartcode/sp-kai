@@ -20,9 +20,13 @@
                 </p>
                 <div class="flex gap-4">
                     <div class="flex-1">
-                        <div class="text-3xl font-bold text-purple-600 mb-2">2000+</div>
+                        <div class="text-3xl font-bold text-purple-600 mb-2">
+                            <%= totalMembers %>
+                        </div>
                         <p class="text-gray-600">Anggota Aktif</p>
-                        <p class="text-sm text-gray-600 mt-1">per 2 Januari 2026</p>
+                        <p class="text-sm text-gray-600 mt-1">per <%= new Date().toLocaleDateString('id-ID', {
+                                day: 'numeric' , month: 'long' , year: 'numeric' }) %>
+                        </p>
                     </div>
                     <div class="flex-1">
                         <div class="text-3xl font-bold text-purple-600 mb-2">5+</div>

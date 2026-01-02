@@ -130,9 +130,14 @@ exports.about = async (req, res) => {
     try {
         const settings = await getSettings();
 
+        // Get real-time member count
+        const [memberCount] = await db.query("SELECT COUNT(*) as total FROM users WHERE role = 'member' AND status = 'approved'");
+        const totalMembers = memberCount[0].total;
+
         res.render('public/tentang', {
             title: 'Tentang Kami - ' + (settings.site_name || 'Serikat'),
-            settings
+            settings,
+            totalMembers
         });
     } catch (error) {
         console.error(error);
