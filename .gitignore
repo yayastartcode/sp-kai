@@ -26,8 +26,8 @@ pids/
 *.swo
 .DS_Store
 
-# Uploads (optional - uncomment if you don't want to track uploads)
-# public/uploads/
+# Uploads (tidak di-track untuk menghindari conflict dengan server)
+public/uploads/
 
 # Documentation files (exclude from repo)
 DEVELOPMENT_PLAN.md
