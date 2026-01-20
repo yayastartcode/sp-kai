@@ -329,3 +329,78 @@ exports.downloadCard = async (req, res) => {
         res.redirect('/member/card');
     }
 };
+
+// Download registration letter as PDF
+exports.downloadLetter = async (req, res) => {
+    try {
+        const letterType = req.params.type; // 'pendaftaran' or 'kuasa'
+        const userId = req.session.user.id;
+
+        // Get member data
+        const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
+        if (rows.length === 0) {
+            req.session.error = 'Data tidak ditemukan';
+            return res.redirect('/member/dashboard');
+        }
+
+        const member = rows[0];
+
+        // Validate letter type
+        if (letterType === 'kuasa' && member.contribution_type !== 'salary_deduction') {
+            req.session.error = 'Surat kuasa hanya untuk pilihan potong gaji';
+            return res.redirect('/member/dashboard');
+        }
+
+        // Generate PDF
+        const letterGenerator = require('../utils/letterGenerator');
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const pdfBuffer = await letterGenerator.generateLetterPDF(member, letterType, baseUrl);
+
+        // Send PDF
+        const filename = letterType === 'pendaftaran'
+            ? `Surat_Pendaftaran_${member.nipp}.pdf`
+            : `Surat_Kuasa_${member.nipp}.pdf`;
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.send(pdfBuffer);
+
+    } catch (error) {
+        console.error(error);
+        req.session.error = 'Terjadi kesalahan saat mengunduh surat';
+        res.redirect('/member/dashboard');
+    }
+};
+
+// Upload signed letter
+exports.uploadSignedLetter = async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        const letterType = req.body.letter_type || 'pendaftaran';
+
+        if (!req.file) {
+            req.session.error = 'File surat harus diupload';
+            return res.redirect('/member/dashboard');
+        }
+
+        const signedLetterPath = `/uploads/members/${req.file.filename}`;
+
+        // Update based on letter type
+        if (letterType === 'kuasa') {
+            await db.query('UPDATE users SET signed_letter_kuasa = ? WHERE id = ?', [signedLetterPath, userId]);
+            req.session.user.signed_letter_kuasa = signedLetterPath;
+            req.session.success = 'Surat Kuasa tertanda berhasil diupload.';
+        } else {
+            await db.query('UPDATE users SET signed_letter = ? WHERE id = ?', [signedLetterPath, userId]);
+            req.session.user.signed_letter = signedLetterPath;
+            req.session.success = 'Surat Pendaftaran tertanda berhasil diupload.';
+        }
+
+        res.redirect('/member/dashboard');
+
+    } catch (error) {
+        console.error(error);
+        req.session.error = 'Terjadi kesalahan saat mengupload surat';
+        res.redirect('/member/dashboard');
+    }
+};

@@ -25,11 +25,24 @@ const imageFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
-    
+
     if (extname && mimetype) {
         return cb(null, true);
     }
     cb(new Error('Hanya file gambar yang diperbolehkan (jpeg, jpg, png, gif, webp)'));
+};
+
+// File filter for images AND PDF (for signed letters)
+const imageAndPdfFilter = (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp|pdf/;
+    const allowedMimes = /image\/(jpeg|jpg|png|gif|webp)|application\/pdf/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedMimes.test(file.mimetype);
+
+    if (extname && mimetype) {
+        return cb(null, true);
+    }
+    cb(new Error('Hanya file gambar atau PDF yang diperbolehkan'));
 };
 
 // Upload configurations
@@ -48,7 +61,7 @@ const uploadNews = multer({
 const uploadMember = multer({
     storage: createStorage('members'),
     limits: { fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5242880 },
-    fileFilter: imageFilter
+    fileFilter: imageAndPdfFilter // Allow PDF for signed letters
 });
 
 const uploadAbout = multer({

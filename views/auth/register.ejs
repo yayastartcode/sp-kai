@@ -1,77 +1,204 @@
 <section class="py-12">
-    <div class="max-w-md mx-auto px-4">
+    <div class="max-w-2xl mx-auto px-4">
         <div class="bg-white rounded-lg shadow-md p-8">
-            <h1 class="text-2xl font-bold text-center text-gray-800 mb-8">Daftar Member</h1>
+            <h1 class="text-2xl font-bold text-center text-gray-800 mb-2">Formulir Pendaftaran Keanggotaan SP-KAI</h1>
+            <p class="text-center text-gray-600 mb-8">Silakan lengkapi data diri Anda</p>
 
-            <form action="/register" method="POST" enctype="multipart/form-data">
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Nama Lengkap *</label>
-                    <input type="text" name="name" required
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        placeholder="Nama lengkap Anda">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">NIPP *</label>
-                    <input type="text" name="nipp" required
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        placeholder="Nomor Induk Pegawai Perusahaan">
-                    <p class="text-sm text-gray-500 mt-1">Digunakan untuk login</p>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Nomor HP</label>
-                    <input type="tel" name="phone"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        placeholder="08xxxxxxxxxx">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Asal Kantor</label>
-                    <input type="text" name="asal"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        placeholder="Nama kantor/unit kerja">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Alamat</label>
-                    <textarea name="address" rows="2"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        placeholder="Alamat lengkap"></textarea>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">NIAS (Nomor Induk Anggota Serikat)</label>
-                    <input type="text" name="nias"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        placeholder="Opsional - dapat diisi nanti">
-                    <p class="text-sm text-gray-500 mt-1">Jika sudah memiliki NIAS, silakan isi di sini</p>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Foto</label>
-                    <input type="file" name="photo" accept="image/*"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
-                    <p class="text-sm text-gray-500 mt-1">Max 5MB. Format: jpg, png, gif</p>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Password *</label>
-                    <input type="password" name="password" required minlength="6"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        placeholder="Minimal 6 karakter">
-                </div>
-
+            <form action="/register" method="POST" enctype="multipart/form-data" id="registerForm">
+                <!-- Data Diri -->
                 <div class="mb-6">
-                    <label class="block text-gray-700 font-medium mb-2">Konfirmasi Password *</label>
-                    <input type="password" name="password_confirm" required minlength="6"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        placeholder="Ulangi password">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Data Diri</h2>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Nama Lengkap *</label>
+                            <input type="text" name="name" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                placeholder="Nama lengkap sesuai KTP">
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">NIPP *</label>
+                            <input type="text" name="nipp" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                placeholder="Nomor Induk Pegawai">
+                            <p class="text-sm text-gray-500 mt-1">Digunakan untuk login</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tempat Lahir *</label>
+                            <input type="text" name="tempat_lahir" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                placeholder="Kota kelahiran">
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tanggal Lahir *</label>
+                            <input type="date" name="tanggal_lahir" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-2">Unit Kerja *</label>
+                            <input type="text" name="asal" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                placeholder="Nama unit kerja / kantor">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-2">Alamat Rumah *</label>
+                            <textarea name="address" rows="2" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                placeholder="Alamat lengkap tempat tinggal"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">No. Telp/HP *</label>
+                            <input type="tel" name="phone" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                placeholder="08xxxxxxxxxx">
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Foto</label>
+                            <input type="file" name="photo" accept="image/*"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <p class="text-sm text-gray-500 mt-1">Opsional. Max 5MB</p>
+                        </div>
+                    </div>
                 </div>
 
-                <button type="submit"
-                    class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition">
-                    Daftar
+                <!-- Password -->
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Password</h2>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Password *</label>
+                            <div class="relative">
+                                <input type="password" name="password" id="password" required minlength="6"
+                                    class="w-full px-4 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    placeholder="Minimal 6 karakter">
+                                <button type="button" onclick="togglePassword('password')"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                    <i class="fas fa-eye" id="password-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Konfirmasi Password *</label>
+                            <div class="relative">
+                                <input type="password" name="password_confirm" id="password_confirm" required
+                                    minlength="6"
+                                    class="w-full px-4 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    placeholder="Ulangi password">
+                                <button type="button" onclick="togglePassword('password_confirm')"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                    <i class="fas fa-eye" id="password_confirm-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password Warning -->
+                    <div class="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-triangle text-yellow-600 mt-0.5 mr-3"></i>
+                            <div>
+                                <p class="text-sm text-yellow-700 font-medium">Penting!</p>
+                                <p class="text-sm text-yellow-600">Pastikan Anda mengingat dan menyimpan password dengan
+                                    baik. Password ini akan digunakan untuk login ke akun Anda.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pilihan Kontribusi -->
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Pilihan Kontribusi Iuran</h2>
+                    <p class="text-gray-600 mb-4">Pilih metode pembayaran iuran keanggotaan sebesar <strong>0,5% dari
+                            upah pokok bulanan</strong>:</p>
+
+                    <div class="space-y-4">
+                        <label
+                            class="flex items-start p-4 border rounded-lg cursor-pointer hover:bg-orange-50 transition contribution-option">
+                            <input type="radio" name="contribution_type" value="transfer" required
+                                class="mt-1 mr-3 text-orange-600 focus:ring-orange-500">
+                            <div>
+                                <span class="font-medium text-gray-800">Transfer Sukarela ke Rekening Serikat</span>
+                                <p class="text-sm text-gray-600 mt-1">Saya akan melakukan transfer mandiri setiap bulan
+                                    ke rekening DPPP SP-KAI</p>
+                            </div>
+                        </label>
+
+                        <label
+                            class="flex items-start p-4 border rounded-lg cursor-pointer hover:bg-orange-50 transition contribution-option">
+                            <input type="radio" name="contribution_type" value="salary_deduction" required
+                                class="mt-1 mr-3 text-orange-600 focus:ring-orange-500">
+                            <div>
+                                <span class="font-medium text-gray-800">Potong Gaji oleh Perusahaan</span>
+                                <p class="text-sm text-gray-600 mt-1">Iuran dipotong langsung dari gaji oleh Perusahaan
+                                    dan/atau melalui bank</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pernyataan & Janji -->
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Pernyataan & Janji</h2>
+
+                    <!-- Placeholder - pilih kontribusi dulu -->
+                    <div id="statement-placeholder" class="text-sm text-gray-500 italic mb-4">
+                        <i class="fas fa-info-circle mr-2"></i>Silakan pilih metode kontribusi terlebih dahulu untuk
+                        melihat pernyataan.
+                    </div>
+
+                    <!-- Pernyataan Transfer -->
+                    <div id="statement-transfer" class="text-sm text-gray-700 space-y-2 mb-4 hidden">
+                        <p>Dengan ini secara sukarela mendaftarkan diri sebagai anggota SP-KAI dan menyatakan dengan
+                            sesungguhnya bahwa saya pada saat ini tidak/belum menjadi anggota organisasi serikat pekerja
+                            manapun di lingkungan PT Kereta Api Indonesia (Persero).</p>
+                        <p><strong>Saya berjanji:</strong></p>
+                        <ol class="list-decimal list-inside space-y-1 ml-2">
+                            <li>Bahwa Saya bersedia mentaati hak dan kewajiban sebagai anggota SP-KAI sesuai peraturan
+                                dan ketentuan di SP-KAI serta menjaga nama baik SP-KAI.</li>
+                            <li>Bahwa Saya bersedia membesarkan dan memajukan SP-KAI serta tidak akan melakukan
+                                pelanggaran integritas di lingkungan PT KAI.</li>
+                            <li>Bahwa Saya bersedia <strong>melakukan pembayaran setiap bulan sebesar 0,5% dari upah
+                                    pokok bulanan sebagai iuran keanggotaan yang dilakukan melalui transfer ke Rekening
+                                    DPPP SP-KAI</strong>.</li>
+                        </ol>
+                    </div>
+
+                    <!-- Pernyataan Potong Gaji -->
+                    <div id="statement-salary" class="text-sm text-gray-700 space-y-2 mb-4 hidden">
+                        <p>Dengan ini secara sukarela mendaftarkan diri sebagai anggota SP-KAI dan menyatakan dengan
+                            sesungguhnya bahwa saya pada saat ini tidak/belum menjadi anggota organisasi serikat pekerja
+                            apapun di lingkungan PT Kereta Api Indonesia (Persero).</p>
+                        <p><strong>Saya berjanji:</strong></p>
+                        <ol class="list-decimal list-inside space-y-1 ml-2">
+                            <li>Bahwa Saya bersedia mentaati hak dan kewajiban sebagai anggota SP-KAI sesuai peraturan
+                                dan ketentuan di SP-KAI serta menjaga nama baik SP-KAI.</li>
+                            <li>Bahwa Saya bersedia membesarkan dan memajukan SP-KAI serta tidak akan melakukan
+                                pelanggaran integritas di lingkungan PT KAI.</li>
+                            <li>Bahwa Saya bersedia <strong>dipotong gaji setiap bulan sebesar 0,5% dari upah pokok
+                                    bulanan sebagai iuran keanggotaan yang pemotongannya dilakukan oleh Perusahaan
+                                    dan/atau melalui bank</strong>.</li>
+                        </ol>
+                    </div>
+
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="agreement" required
+                            class="mr-3 w-5 h-5 text-orange-600 focus:ring-orange-500 rounded">
+                        <span class="font-medium text-gray-800">Telah membaca, memahami, menyatakan dan berjanji</span>
+                    </label>
+                </div>
+
+                <button type="submit" id="submitBtn" disabled
+                    class="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    Daftar Keanggotaan
                 </button>
             </form>
 
@@ -82,3 +209,56 @@
         </div>
     </div>
 </section>
+
+<style>
+    .contribution-option:has(input:checked) {
+        border-color: #ea580c;
+        background-color: #fff7ed;
+    }
+</style>
+
+<script>
+    // Enable submit button only when checkbox is checked
+    const agreement = document.getElementById('agreement');
+    const submitBtn = document.getElementById('submitBtn');
+
+    agreement.addEventListener('change', function () {
+        submitBtn.disabled = !this.checked;
+    });
+
+    // Toggle password visibility
+    function togglePassword(fieldId) {
+        const input = document.getElementById(fieldId);
+        const icon = document.getElementById(fieldId + '-icon');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    // Toggle statement based on contribution type
+    const contributionRadios = document.querySelectorAll('input[name="contribution_type"]');
+    const statementPlaceholder = document.getElementById('statement-placeholder');
+    const statementTransfer = document.getElementById('statement-transfer');
+    const statementSalary = document.getElementById('statement-salary');
+
+    contributionRadios.forEach(radio => {
+        radio.addEventListener('change', function () {
+            statementPlaceholder.classList.add('hidden');
+
+            if (this.value === 'transfer') {
+                statementTransfer.classList.remove('hidden');
+                statementSalary.classList.add('hidden');
+            } else {
+                statementTransfer.classList.add('hidden');
+                statementSalary.classList.remove('hidden');
+            }
+        });
+    });
+</script>

@@ -1,6 +1,7 @@
 const db = require('../config/database');
 const path = require('path');
 const fs = require('fs');
+const xlsx = require('xlsx');
 const cardGeneratorCustom = require('../utils/cardGeneratorCustom');
 
 // Get settings helper
@@ -222,6 +223,62 @@ exports.members = async (req, res) => {
         console.error(error);
         req.session.error = 'Terjadi kesalahan';
         res.redirect('/admin/dashboard');
+    }
+};
+
+// Export all members to Excel
+exports.exportMembers = async (req, res) => {
+    try {
+        // Get all approved members
+        const [members] = await db.query(
+            'SELECT nipp, name, asal, nias FROM users WHERE role = ? ORDER BY name ASC',
+            ['member']
+        );
+
+        // Prepare data with headers
+        const data = [
+            ['NO', 'NIPP', 'NAMA', 'ASAL', 'NIAS']  // Headers
+        ];
+
+        // Add member data
+        members.forEach((member, index) => {
+            data.push([
+                index + 1,
+                member.nipp || '',
+                member.name || '',
+                member.asal || '',
+                member.nias || ''
+            ]);
+        });
+
+        // Create workbook and worksheet
+        const workbook = xlsx.utils.book_new();
+        const worksheet = xlsx.utils.aoa_to_sheet(data);
+
+        // Set column widths
+        worksheet['!cols'] = [
+            { wch: 5 },   // NO
+            { wch: 15 },  // NIPP
+            { wch: 35 },  // NAMA
+            { wch: 30 },  // ASAL
+            { wch: 15 }   // NIAS
+        ];
+
+        xlsx.utils.book_append_sheet(workbook, worksheet, 'Members');
+
+        // Generate buffer
+        const buffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+        // Set response headers
+        const filename = `data-member-${new Date().toISOString().slice(0, 10)}.xlsx`;
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.send(buffer);
+
+    } catch (error) {
+        console.error(error);
+        req.session.error = 'Terjadi kesalahan saat export data';
+        res.redirect('/admin/members');
     }
 };
 
@@ -569,15 +626,120 @@ exports.downloadCard = async (req, res) => {
     }
 };
 
+// Download member registration letter for admin as PDF
+exports.downloadMemberLetter = async (req, res) => {
+    try {
+        const memberId = req.params.id;
+        const letterType = req.params.type; // 'pendaftaran' or 'kuasa'
+
+        // Get member data
+        const [members] = await db.query('SELECT * FROM users WHERE id = ?', [memberId]);
+        if (members.length === 0) {
+            req.session.error = 'Member tidak ditemukan';
+            return res.redirect('/admin/members');
+        }
+
+        const member = members[0];
+
+        // Validate letter type for kuasa
+        if (letterType === 'kuasa' && member.contribution_type !== 'salary_deduction') {
+            req.session.error = 'Surat kuasa hanya untuk pilihan potong gaji';
+            return res.redirect('/admin/members/' + memberId);
+        }
+
+        // Generate PDF
+        const letterGenerator = require('../utils/letterGenerator');
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const pdfBuffer = await letterGenerator.generateLetterPDF(member, letterType, baseUrl);
+
+        // Send PDF
+        const filename = letterType === 'pendaftaran'
+            ? `Surat_Pendaftaran_${member.nipp}.pdf`
+            : `Surat_Kuasa_${member.nipp}.pdf`;
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.send(pdfBuffer);
+
+    } catch (error) {
+        console.error(error);
+        req.session.error = 'Terjadi kesalahan saat download surat';
+        res.redirect('/admin/members/' + req.params.id);
+    }
+};
+
+// Reset member password (admin)
+exports.resetMemberPassword = async (req, res) => {
+    try {
+        const memberId = req.params.id;
+        const { new_password, confirm_password } = req.body;
+
+        // Validate passwords
+        if (!new_password || !confirm_password) {
+            req.session.error = 'Password baru dan konfirmasi harus diisi';
+            return res.redirect('/admin/members/' + memberId);
+        }
+
+        if (new_password.length < 6) {
+            req.session.error = 'Password minimal 6 karakter';
+            return res.redirect('/admin/members/' + memberId);
+        }
+
+        if (new_password !== confirm_password) {
+            req.session.error = 'Konfirmasi password tidak cocok';
+            return res.redirect('/admin/members/' + memberId);
+        }
+
+        // Check if member exists
+        const [members] = await db.query('SELECT id, name FROM users WHERE id = ?', [memberId]);
+        if (members.length === 0) {
+            req.session.error = 'Member tidak ditemukan';
+            return res.redirect('/admin/members');
+        }
+
+        // Hash new password
+        const bcrypt = require('bcryptjs');
+        const hashedPassword = await bcrypt.hash(new_password, 10);
+
+        // Update password
+        await db.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, memberId]);
+
+        req.session.success = `Password member ${members[0].name} berhasil direset`;
+        res.redirect('/admin/members/' + memberId);
+
+    } catch (error) {
+        console.error(error);
+        req.session.error = 'Terjadi kesalahan saat reset password';
+        res.redirect('/admin/members/' + req.params.id);
+    }
+};
+
 exports.gallery = async (req, res) => {
     try {
         const settings = await getSettings();
-        const [gallery] = await db.query('SELECT * FROM gallery ORDER BY sort_order ASC, created_at DESC');
+        const page = parseInt(req.query.page) || 1;
+        const limit = 12;
+        const offset = (page - 1) * limit;
+
+        // Get total count
+        const [countResult] = await db.query('SELECT COUNT(*) as total FROM gallery');
+        const totalItems = countResult[0].total;
+        const totalPages = Math.ceil(totalItems / limit);
+
+        // Get paginated gallery
+        const [gallery] = await db.query(
+            'SELECT * FROM gallery ORDER BY sort_order ASC, created_at DESC LIMIT ? OFFSET ?',
+            [limit, offset]
+        );
 
         res.render('admin/gallery', {
             title: 'Manajemen Galeri',
             settings,
-            gallery
+            gallery,
+            currentPage: page,
+            totalPages,
+            totalItems,
+            limit
         });
     } catch (error) {
         console.error(error);
@@ -637,12 +799,29 @@ exports.deleteGallery = async (req, res) => {
 exports.news = async (req, res) => {
     try {
         const settings = await getSettings();
-        const [news] = await db.query('SELECT * FROM news ORDER BY created_at DESC');
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const offset = (page - 1) * limit;
+
+        // Get total count
+        const [countResult] = await db.query('SELECT COUNT(*) as total FROM news');
+        const totalItems = countResult[0].total;
+        const totalPages = Math.ceil(totalItems / limit);
+
+        // Get paginated news
+        const [news] = await db.query(
+            'SELECT * FROM news ORDER BY created_at DESC LIMIT ? OFFSET ?',
+            [limit, offset]
+        );
 
         res.render('admin/news', {
             title: 'Manajemen Berita',
             settings,
-            news
+            news,
+            currentPage: page,
+            totalPages,
+            totalItems,
+            limit
         });
     } catch (error) {
         console.error(error);

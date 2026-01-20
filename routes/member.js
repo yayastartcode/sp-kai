@@ -20,4 +20,9 @@ router.get('/card/download', isApprovedMember, memberController.downloadCard);
 router.post('/card/generate', isApprovedMember, memberController.generateCard);
 router.post('/card/regenerate', isApprovedMember, memberController.regenerateCard);
 
+// Registration letters (for pending members)
+router.get('/letter/:type', memberController.downloadLetter);
+router.post('/upload-signed-letter', uploadMember.single('signed_letter'), memberController.uploadSignedLetter);
+
 module.exports = router;
+

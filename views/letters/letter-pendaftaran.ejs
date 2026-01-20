@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Formulir Pendaftaran SP-KAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+        }
+
+        .logo {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+        }
+
+        .logo-spkai {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+        }
+
+        .header-text {
+            text-align: center;
+            flex: 1;
+            padding: 0 15px;
+        }
+
+        .header-text h1 {
+            color: #000;
+            font-size: 14pt;
+            margin: 2px 0;
+        }
+
+        .header-text h2 {
+            color: #1a365d;
+            font-size: 12pt;
+            margin: 2px 0;
+        }
+
+        .header-text p {
+            font-size: 8pt;
+            margin: 1px 0;
+            color: #555;
+        }
+
+        .title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12pt;
+            margin: 15px 0 12px;
+        }
+
+        .kepada {
+            margin-bottom: 18px;
+            font-size: 11pt;
+            font-weight: bold;
+        }
+
+        .data-table {
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 11pt;
+        }
+
+        .data-table td {
+            padding: 2px 0;
+            vertical-align: top;
+        }
+
+        .data-table td:first-child {
+            width: 120px;
+        }
+
+        .content {
+            text-align: justify;
+            margin-bottom: 10px;
+            font-size: 11pt;
+        }
+
+        .janji {
+            margin-left: 15px;
+            font-size: 11pt;
+        }
+
+        .janji li {
+            margin-bottom: 5px;
+            text-align: justify;
+        }
+
+        .penutup {
+            text-align: justify;
+            margin-top: 10px;
+            font-size: 11pt;
+        }
+
+        .signature-section {
+            margin-top: auto;
+            padding-top: 5px;
+        }
+
+        .signature-place-date {
+            text-align: left;
+            font-size: 11pt;
+            margin-bottom: 10px;
+        }
+
+        .signature {
+            text-align: left;
+            width: 320px;
+        }
+
+        .signature p {
+            margin: 3px 0;
+            font-size: 11pt;
+            white-space: nowrap;
+        }
+
+        .signature .line {
+            margin-top: 70px;
+            border-bottom: 1px solid #333;
+            width: 200px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 8pt;
+            margin-top: 15px;
+            border-top: 1px solid #333;
+            padding-top: 8px;
+            color: #555;
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+        <div class="header">
+            <img src="<%= logoSpkai %>" alt="SP-KAI" class="logo-spkai">
+            <div class="header-text">
+                <h1>Serikat Pekerja Kereta Api Indonesia</h1>
+                <h1>(SP-KAI)</h1>
+                <h2>DEWAN PERWAKILAN PEKERJA PUSAT</h2>
+                <p>Sekretariat SP-KAI, Kantor Pusat PT Kereta Api Indonesia (Persero)</p>
+                <p>Jl. Perintis Kemerdekaan No. 1 Bandung, Jawa Barat | Email: DPPP_SP-KAI@kai.id</p>
+            </div>
+            <img src="<%= logoBumnira %>" alt="FSPBUMN IRA" class="logo">
+        </div>
+
+        <div class="title">FORMULIR PENDAFTARAN KEANGGOTAAN SP-KAI</div>
+
+        <div class="kepada">
+            <p>Kepada, Yth: Ketua Umum SP-KAI</p>
+        </div>
+
+        <p style="margin-bottom: 8px;">Yang bertanda tangan dibawah ini:</p>
+
+        <table class="data-table">
+            <tr>
+                <td>Nama</td>
+                <td>: <%= member.name %>
+                </td>
+            </tr>
+            <tr>
+                <td>NIPP</td>
+                <td>: <%= member.nipp %>
+                </td>
+            </tr>
+            <tr>
+                <td>Tmpt/Tgl Lahir</td>
+                <td>: <%= member.tempat_tanggal_lahir %>
+                </td>
+            </tr>
+            <tr>
+                <td>Unit Kerja</td>
+                <td>: <%= member.unit_kerja %>
+                </td>
+            </tr>
+            <tr>
+                <td>Alamat Rumah</td>
+                <td>: <%= member.address || '-' %>
+                </td>
+            </tr>
+            <tr>
+                <td>No. Telp/HP</td>
+                <td>: <%= member.phone || '-' %>
+                </td>
+            </tr>
+        </table>
+
+        <div class="content">
+            <p>Dengan ini secara sukarela mendaftarkan diri sebagai anggota SP-KAI dan menyatakan dengan sesungguhnya
+                bahwa saya pada saat ini tidak/belum menjadi anggota organisasi serikat pekerja manapun di lingkungan PT
+                Kereta Api Indonesia (Persero).</p>
+        </div>
+
+        <p style="margin-bottom: 5px;"><strong>Saya berjanji:</strong></p>
+        <ol class="janji">
+            <li>Bahwa Saya bersedia mentaati hak dan kewajiban sebagai anggota SP-KAI sesuai peraturan dan ketentuan di
+                SP-KAI serta menjaga nama baik SP-KAI.</li>
+            <li>Bahwa Saya bersedia membesarkan dan memajukan SP-KAI serta tidak akan melakukan pelanggaran integritas
+                di lingkungan PT KAI.</li>
+            <li>Bahwa Saya bersedia <% if (member.contribution_type==='transfer' ) { %>melakukan pembayaran setiap bulan
+                    sebesar 0,5% dari upah pokok bulanan sebagai iuran keanggotaan yang dilakukan melalui transfer ke
+                    Rekening DPPP SP-KAI<% } else { %>dipotong gaji setiap bulan sebesar 0,5% dari upah pokok bulanan
+                        sebagai iuran keanggotaan yang pemotongannya dilakukan oleh Perusahaan dan/atau melalui bank<% }
+                            %>.</li>
+        </ol>
+
+        <div class="penutup">
+            <p>Demikian pernyataan pendaftaran & janji ini saya buat dengan sebenar-benarnya tanpa adanya paksaan dan
+                tekanan dari pihak manapun, untuk dapat dipergunakan seperlunya.</p>
+        </div>
+    </div>
+
+    <div class="signature-section">
+        <div class="signature-place-date">
+            <p>
+                <%= member.tempat_lahir || 'Bandung' %>, <%= today %>
+            </p>
+        </div>
+        <div class="signature">
+            <p>Yang Mendaftar, Menyatakan & Berjanji</p>
+            <div class="line"></div>
+            <p><strong>
+                    <%= member.name %>
+                </strong></p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Jl. Perintis Kemerdekaan No. 1 Bandung 40117, Jawa Barat</p>
+    </div>
+</body>
+
+</html>

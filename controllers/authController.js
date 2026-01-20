@@ -105,11 +105,11 @@ exports.registerPage = async (req, res) => {
 
 exports.register = async (req, res) => {
     try {
-        const { nipp, password, password_confirm, name, phone, address, nias, asal } = req.body;
+        const { nipp, password, password_confirm, name, phone, address, tempat_lahir, tanggal_lahir, asal, contribution_type } = req.body;
 
         // Validate input
-        if (!nipp || !password || !name) {
-            req.session.error = 'NIPP, password, dan nama harus diisi';
+        if (!nipp || !password || !name || !tempat_lahir || !tanggal_lahir || !asal || !contribution_type) {
+            req.session.error = 'Semua field wajib harus diisi';
             return res.redirect('/register');
         }
 
@@ -130,28 +130,23 @@ exports.register = async (req, res) => {
             return res.redirect('/register');
         }
 
-        // Check if NIAS already exists (if provided)
-        if (nias && nias.trim()) {
-            const [existingNias] = await db.query('SELECT id FROM users WHERE nias = ?', [nias.trim()]);
-            if (existingNias.length > 0) {
-                req.session.error = 'NIAS sudah digunakan oleh member lain';
-                return res.redirect('/register');
-            }
-        }
-
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Get photo if uploaded
         const photo = req.file ? `/uploads/members/${req.file.filename}` : null;
 
-        // Insert user
+        // Generate member_id
+        const memberId = `MBR${String(Date.now()).slice(-8)}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+
+        // Insert user - using 'asal' column only
         await db.query(
-            'INSERT INTO users (nipp, password, name, phone, address, photo, nias, asal, role, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [nipp.trim(), hashedPassword, name, phone || null, address || null, photo, nias && nias.trim() ? nias.trim() : null, asal || null, 'member', 'pending']
+            `INSERT INTO users (nipp, password, name, phone, address, photo, tempat_lahir, tanggal_lahir, asal, contribution_type, role, status, member_id) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [nipp.trim(), hashedPassword, name, phone || null, address || null, photo, tempat_lahir, tanggal_lahir, asal, contribution_type, 'member', 'pending', memberId]
         );
 
-        req.session.success = 'Pendaftaran berhasil! Silakan login dan tunggu persetujuan admin.';
+        req.session.success = 'Pendaftaran berhasil! Silakan login untuk melanjutkan proses.';
         res.redirect('/login');
 
     } catch (error) {

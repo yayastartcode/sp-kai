@@ -70,6 +70,45 @@
                             <% }) %>
                     </div>
                     <% } %>
+
+                        <!-- Pagination -->
+                        <% if (totalPages> 1) { %>
+                            <div class="mt-6 flex justify-center items-center gap-2">
+                                <% if (currentPage> 1) { %>
+                                    <a href="/admin/gallery?page=<%= currentPage - 1 %>"
+                                        class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                    <% } %>
+
+                                        <% for (let i=1; i <=totalPages; i++) { %>
+                                            <% if (i===currentPage) { %>
+                                                <span class="px-3 py-2 bg-purple-600 text-white rounded">
+                                                    <%= i %>
+                                                </span>
+                                                <% } else if (i===1 || i===totalPages || (i>= currentPage - 2 && i <=
+                                                        currentPage + 2)) { %>
+                                                        <a href="/admin/gallery?page=<%= i %>"
+                                                            class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                                                            <%= i %>
+                                                        </a>
+                                                        <% } else if (i===currentPage - 3 || i===currentPage + 3) { %>
+                                                            <span class="px-2">...</span>
+                                                            <% } %>
+                                                                <% } %>
+
+                                                                    <% if (currentPage < totalPages) { %>
+                                                                        <a href="/admin/gallery?page=<%= currentPage + 1 %>"
+                                                                            class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                                                                            <i class="fas fa-chevron-right"></i>
+                                                                        </a>
+                                                                        <% } %>
+                            </div>
+                            <p class="text-center text-sm text-gray-500 mt-2">
+                                Menampilkan <%= (currentPage - 1) * limit + 1 %> - <%= Math.min(currentPage * limit,
+                                        totalItems) %> dari <%= totalItems %> item
+                            </p>
+                            <% } %>
         </div>
 
         <div class="mt-6">

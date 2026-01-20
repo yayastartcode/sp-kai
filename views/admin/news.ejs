@@ -6,7 +6,7 @@
                 <i class="fas fa-plus mr-2"></i>Tambah Berita
             </a>
         </div>
-        
+
         <!-- News Table -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="overflow-x-auto">
@@ -22,57 +22,107 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y">
-                        <% if (news.length === 0) { %>
+                        <% if (news.length===0) { %>
                             <tr>
                                 <td colspan="6" class="px-4 py-8 text-center text-gray-500">Belum ada berita</td>
                             </tr>
-                        <% } else { %>
-                            <% news.forEach(item => { %>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-3">
-                                        <div class="w-16 h-12 bg-gray-200 rounded overflow-hidden">
-                                            <% if (item.image) { %>
-                                                <img src="<%= item.image %>" alt="" class="w-full h-full object-cover">
-                                            <% } %>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <a href="/berita/<%= item.slug %>" target="_blank" class="font-medium hover:text-purple-600">
-                                            <%= item.title %>
-                                        </a>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <% if (item.is_published) { %>
-                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Published</span>
-                                        <% } else { %>
-                                            <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">Draft</span>
+                            <% } else { %>
+                                <% news.forEach(item=> { %>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3">
+                                            <div class="w-16 h-12 bg-gray-200 rounded overflow-hidden">
+                                                <% if (item.image) { %>
+                                                    <img src="<%= item.image %>" alt=""
+                                                        class="w-full h-full object-cover">
+                                                    <% } %>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <a href="/berita/<%= item.slug %>" target="_blank"
+                                                class="font-medium hover:text-purple-600">
+                                                <%= item.title %>
+                                            </a>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <% if (item.is_published) { %>
+                                                <span
+                                                    class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Published</span>
+                                                <% } else { %>
+                                                    <span
+                                                        class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">Draft</span>
+                                                    <% } %>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-600">
+                                            <%= item.views %>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-600">
+                                            <%= new Date(item.created_at).toLocaleDateString('id-ID') %>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex gap-2">
+                                                <a href="/admin/news/<%= item.id %>/edit"
+                                                    class="text-blue-600 hover:underline text-sm">Edit</a>
+                                                <form action="/admin/news/<%= item.id %>/toggle-publish" method="POST"
+                                                    class="inline">
+                                                    <button type="submit"
+                                                        class="text-yellow-600 hover:underline text-sm">
+                                                        <%= item.is_published ? 'Unpublish' : 'Publish' %>
+                                                    </button>
+                                                </form>
+                                                <form action="/admin/news/<%= item.id %>/delete" method="POST"
+                                                    class="inline" onsubmit="return confirm('Hapus berita ini?')">
+                                                    <button type="submit"
+                                                        class="text-red-600 hover:underline text-sm">Hapus</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
                                         <% } %>
-                                    </td>
-                                    <td class="px-4 py-3 text-sm text-gray-600"><%= item.views %></td>
-                                    <td class="px-4 py-3 text-sm text-gray-600">
-                                        <%= new Date(item.created_at).toLocaleDateString('id-ID') %>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <div class="flex gap-2">
-                                            <a href="/admin/news/<%= item.id %>/edit" class="text-blue-600 hover:underline text-sm">Edit</a>
-                                            <form action="/admin/news/<%= item.id %>/toggle-publish" method="POST" class="inline">
-                                                <button type="submit" class="text-yellow-600 hover:underline text-sm">
-                                                    <%= item.is_published ? 'Unpublish' : 'Publish' %>
-                                                </button>
-                                            </form>
-                                            <form action="/admin/news/<%= item.id %>/delete" method="POST" class="inline" onsubmit="return confirm('Hapus berita ini?')">
-                                                <button type="submit" class="text-red-600 hover:underline text-sm">Hapus</button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        <% } %>
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            <% if (totalPages> 1) { %>
+                <div class="mt-6 flex justify-center items-center gap-2">
+                    <% if (currentPage> 1) { %>
+                        <a href="/admin/news?page=<%= currentPage - 1 %>"
+                            class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        <% } %>
+
+                            <% for (let i=1; i <=totalPages; i++) { %>
+                                <% if (i===currentPage) { %>
+                                    <span class="px-3 py-2 bg-purple-600 text-white rounded">
+                                        <%= i %>
+                                    </span>
+                                    <% } else if (i===1 || i===totalPages || (i>= currentPage - 2 && i <= currentPage +
+                                            2)) { %>
+                                            <a href="/admin/news?page=<%= i %>"
+                                                class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                                                <%= i %>
+                                            </a>
+                                            <% } else if (i===currentPage - 3 || i===currentPage + 3) { %>
+                                                <span class="px-2">...</span>
+                                                <% } %>
+                                                    <% } %>
+
+                                                        <% if (currentPage < totalPages) { %>
+                                                            <a href="/admin/news?page=<%= currentPage + 1 %>"
+                                                                class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                                                                <i class="fas fa-chevron-right"></i>
+                                                            </a>
+                                                            <% } %>
+                </div>
+                <p class="text-center text-sm text-gray-500 mt-2">
+                    Menampilkan <%= (currentPage - 1) * limit + 1 %> - <%= Math.min(currentPage * limit, totalItems) %>
+                            dari <%= totalItems %> berita
+                </p>
+                <% } %>
         </div>
-        
+
         <div class="mt-6">
             <a href="/admin/dashboard" class="text-purple-600 hover:underline">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali ke Dashboard
