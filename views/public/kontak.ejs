@@ -1,0 +1,153 @@
+<section class="py-12">
+    <div class="max-w-6xl mx-auto px-4">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                <%= settings.contact_title || 'Hubungi Kami' %>
+            </h1>
+            <% if (settings.contact_description) { %>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    <%= settings.contact_description %>
+                </p>
+                <% } %>
+                    <div class="w-16 h-1 bg-gradient-to-r from-transparent via-orange-600 to-transparent mx-auto mt-4">
+                    </div>
+        </div>
+
+        <!-- Main Contact Info -->
+        <div class="grid md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white rounded-xl shadow-md p-6 text-center hover:shadow-lg transition">
+                <div class="w-16 h-16 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-map-marker-alt text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 mb-2">Alamat</h3>
+                <p class="text-gray-600 text-sm">
+                    <%= settings.footer_address || 'Alamat Kantor Pusat' %>
+                </p>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-6 text-center hover:shadow-lg transition">
+                <div class="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-phone text-2xl text-green-600"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 mb-2">Telepon</h3>
+                <p class="text-gray-600 text-sm">
+                    <%= settings.footer_phone || 'Nomor Telepon' %>
+                </p>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-6 text-center hover:shadow-lg transition">
+                <div class="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-envelope text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 mb-2">Email</h3>
+                <p class="text-gray-600 text-sm">
+                    <%= settings.footer_email || 'Email' %>
+                </p>
+            </div>
+        </div>
+
+        <!-- DPPD List Content -->
+        <% if (settings.contact_content) { %>
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-building text-orange-600 mr-3"></i>
+                    Alamat DPPD SP-KAI Seluruh Indonesia
+                </h2>
+                <div class="prose prose-lg max-w-none contact-content">
+                    <%- settings.contact_content %>
+                </div>
+            </div>
+            <% } else { %>
+                <div class="bg-gray-100 rounded-xl p-8 text-center">
+                    <i class="fas fa-info-circle text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-500">Konten alamat DPPD belum tersedia. Silakan isi melalui admin panel.</p>
+                </div>
+                <% } %>
+
+                    <!-- Back Link -->
+                    <div class="mt-8">
+                        <a href="/" class="text-purple-600 hover:text-purple-700 flex items-center gap-2">
+                            <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+                        </a>
+                    </div>
+    </div>
+</section>
+
+<style>
+    .contact-content h2 {
+        color: #1f2937;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #f97316;
+        padding-bottom: 0.5rem;
+    }
+
+    .contact-content h3 {
+        color: #374151;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .contact-content h4 {
+        color: #4b5563;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-content p {
+        color: #4b5563;
+        line-height: 1.75;
+        margin-bottom: 1rem;
+    }
+
+    .contact-content ul,
+    .contact-content ol {
+        margin-left: 1.5rem;
+        margin-bottom: 1rem;
+        color: #4b5563;
+    }
+
+    .contact-content li {
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-content strong {
+        color: #1f2937;
+    }
+
+    .contact-content a {
+        color: #7c3aed;
+        text-decoration: underline;
+    }
+
+    .contact-content a:hover {
+        color: #5b21b6;
+    }
+
+    .contact-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+    }
+
+    .contact-content th,
+    .contact-content td {
+        border: 1px solid #e5e7eb;
+        padding: 0.75rem;
+        text-align: left;
+    }
+
+    .contact-content th {
+        background-color: #f3f4f6;
+        font-weight: 600;
+    }
+
+    .contact-content tr:nth-child(even) {
+        background-color: #f9fafb;
+    }
+</style>

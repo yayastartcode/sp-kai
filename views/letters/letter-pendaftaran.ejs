@@ -259,7 +259,7 @@
     <div class="signature-section">
         <div class="signature-place-date">
             <p>
-                <%= member.tempat_lahir || 'Bandung' %>, <%= today %>
+                <%= member.regency_name || member.tempat_lahir || 'Bandung' %>, <%= today %>
             </p>
         </div>
         <div class="signature">

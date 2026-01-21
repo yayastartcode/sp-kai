@@ -63,102 +63,124 @@
                     <i class="fas fa-file-alt mr-2 text-orange-600"></i>Dokumen Pendaftaran
                 </h3>
 
-                <div class="mb-6">
-                    <p class="text-gray-600 mb-4">
-                        Silakan download surat pendaftaran, cetak, tanda tangan, dan upload kembali.
-                    </p>
-
-                    <!-- Download Buttons -->
-                    <div class="flex flex-wrap gap-3 mb-6">
-                        <a href="/member/letter/pendaftaran" target="_blank"
-                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                            <i class="fas fa-download mr-2"></i>Download Surat Pendaftaran
-                        </a>
-                        <% if (member.contribution_type==='salary_deduction' ) { %>
-                            <a href="/member/letter/kuasa" target="_blank"
-                                class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                                <i class="fas fa-download mr-2"></i>Download Surat Kuasa
-                            </a>
+                <!-- Notification Box - Different for transfer vs salary_deduction -->
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg mb-6">
+                    <h4 class="font-semibold text-amber-800 mb-2">
+                        <i class="fas fa-info-circle mr-2"></i>Langkah-langkah Pendaftaran:
+                    </h4>
+                    <% if (member.contribution_type==='salary_deduction' ) { %>
+                        <!-- Untuk Potong Gaji -->
+                        <ol class="list-decimal list-inside text-amber-700 space-y-2 text-sm">
+                            <li>Silakan download <strong>surat pendaftaran</strong> dan <strong>surat kuasa pemotongan
+                                    gaji</strong>, cetak, tanda tangan, dan <strong>upload kembali</strong> ke sistem
+                                ini. <br><span class="text-red-600 font-medium">(Catatan: surat kuasa pemotongan gaji
+                                    wajib bermeterai)</span></li>
+                            <li>Dokumen <strong>surat pendaftaran</strong> dan <strong>surat kuasa pemotongan
+                                    gaji</strong> (fisik) untuk diserahkan/dikirim kepada <strong>DPPD SP-KAI</strong>
+                                setempat.</li>
+                        </ol>
+                        <% } else { %>
+                            <!-- Untuk Transfer -->
+                            <ol class="list-decimal list-inside text-amber-700 space-y-2 text-sm">
+                                <li>Silakan download surat pendaftaran, <strong>cetak</strong>, <strong>tanda
+                                        tangan</strong>, dan <strong>upload kembali</strong> ke sistem ini.</li>
+                                <li>Dokumen surat pendaftaran (fisik) untuk diserahkan/dikirim kepada <strong>DPPD
+                                        SP-KAI</strong> setempat.</li>
+                            </ol>
                             <% } %>
-                    </div>
-
-                    <!-- Contribution Type Info -->
-                    <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                        <p class="text-sm text-gray-600">
-                            <strong>Pilihan Kontribusi:</strong>
-                            <% if (member.contribution_type==='transfer' ) { %>
-                                <span class="text-blue-600">Transfer Sukarela ke Rekening Serikat</span>
-                                <% } else { %>
-                                    <span class="text-purple-600">Potong Gaji oleh Perusahaan</span>
-                                    <% } %>
-                        </p>
-                    </div>
                 </div>
 
-                <!-- Upload Signed Letter -->
-                <div class="border-t pt-6">
-                    <h4 class="font-medium text-gray-800 mb-4">Upload Surat Tertanda</h4>
+                <!-- Download Buttons -->
+                <div class="flex flex-wrap gap-3 mb-6">
+                    <a href="/member/letter/pendaftaran" target="_blank"
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-download mr-2"></i>Download Surat Pendaftaran
+                    </a>
+                    <% if (member.contribution_type==='salary_deduction' ) { %>
+                        <a href="/member/letter/kuasa" target="_blank"
+                            class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                            <i class="fas fa-download mr-2"></i>Download Surat Kuasa
+                        </a>
+                        <% } %>
+                </div>
 
-                    <!-- Upload Surat Pendaftaran -->
-                    <div class="mb-6">
+                <!-- Contribution Type Info -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                    <p class="text-sm text-gray-600">
+                        <strong>Pilihan Kontribusi:</strong>
+                        <% if (member.contribution_type==='transfer' ) { %>
+                            <span class="text-blue-600">Transfer Sukarela ke Rekening Serikat</span>
+                            <% } else { %>
+                                <span class="text-purple-600">Potong Gaji oleh Perusahaan</span>
+                                <% } %>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Upload Signed Letter -->
+            <div class="border-t pt-6">
+                <h4 class="font-medium text-gray-800 mb-4">Upload Surat Tertanda</h4>
+
+                <!-- Upload Surat Pendaftaran -->
+                <div class="mb-6">
+                    <p class="text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-file-signature mr-1 text-blue-600"></i>Surat Pendaftaran
+                    </p>
+                    <% if (member.signed_letter) { %>
+                        <div class="bg-green-50 border border-green-200 p-3 rounded-lg">
+                            <p class="text-green-700 text-sm">
+                                <i class="fas fa-check-circle mr-2"></i>Sudah diupload
+                                <a href="<%= member.signed_letter %>" target="_blank"
+                                    class="text-green-600 hover:underline ml-2">Lihat</a>
+                            </p>
+                        </div>
+                        <% } else { %>
+                            <form action="/member/upload-signed-letter" method="POST" enctype="multipart/form-data"
+                                class="flex gap-3">
+                                <input type="hidden" name="letter_type" value="pendaftaran">
+                                <input type="file" name="signed_letter" accept="image/*,.pdf" required
+                                    class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                                <button type="submit"
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                                    <i class="fas fa-upload mr-1"></i>Upload
+                                </button>
+                            </form>
+                            <% } %>
+                </div>
+
+                <!-- Upload Surat Kuasa (hanya untuk salary_deduction) -->
+                <% if (member.contribution_type==='salary_deduction' ) { %>
+                    <div class="mb-4">
                         <p class="text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-file-signature mr-1 text-blue-600"></i>Surat Pendaftaran
+                            <i class="fas fa-file-contract mr-1 text-purple-600"></i>Surat Kuasa
                         </p>
-                        <% if (member.signed_letter) { %>
+                        <% if (member.signed_letter_kuasa) { %>
                             <div class="bg-green-50 border border-green-200 p-3 rounded-lg">
                                 <p class="text-green-700 text-sm">
                                     <i class="fas fa-check-circle mr-2"></i>Sudah diupload
-                                    <a href="<%= member.signed_letter %>" target="_blank"
+                                    <a href="<%= member.signed_letter_kuasa %>" target="_blank"
                                         class="text-green-600 hover:underline ml-2">Lihat</a>
                                 </p>
                             </div>
                             <% } else { %>
                                 <form action="/member/upload-signed-letter" method="POST" enctype="multipart/form-data"
                                     class="flex gap-3">
-                                    <input type="hidden" name="letter_type" value="pendaftaran">
+                                    <input type="hidden" name="letter_type" value="kuasa">
                                     <input type="file" name="signed_letter" accept="image/*,.pdf" required
-                                        class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                                        class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
                                     <button type="submit"
-                                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                                        class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 text-sm">
                                         <i class="fas fa-upload mr-1"></i>Upload
                                     </button>
                                 </form>
                                 <% } %>
                     </div>
+                    <% } %>
 
-                    <!-- Upload Surat Kuasa (hanya untuk salary_deduction) -->
-                    <% if (member.contribution_type==='salary_deduction' ) { %>
-                        <div class="mb-4">
-                            <p class="text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-file-contract mr-1 text-purple-600"></i>Surat Kuasa
-                            </p>
-                            <% if (member.signed_letter_kuasa) { %>
-                                <div class="bg-green-50 border border-green-200 p-3 rounded-lg">
-                                    <p class="text-green-700 text-sm">
-                                        <i class="fas fa-check-circle mr-2"></i>Sudah diupload
-                                        <a href="<%= member.signed_letter_kuasa %>" target="_blank"
-                                            class="text-green-600 hover:underline ml-2">Lihat</a>
-                                    </p>
-                                </div>
-                                <% } else { %>
-                                    <form action="/member/upload-signed-letter" method="POST"
-                                        enctype="multipart/form-data" class="flex gap-3">
-                                        <input type="hidden" name="letter_type" value="kuasa">
-                                        <input type="file" name="signed_letter" accept="image/*,.pdf" required
-                                            class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
-                                        <button type="submit"
-                                            class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 text-sm">
-                                            <i class="fas fa-upload mr-1"></i>Upload
-                                        </button>
-                                    </form>
-                                    <% } %>
-                        </div>
-                        <% } %>
-
-                            <p class="text-sm text-gray-500 mt-2">Upload foto/scan surat yang sudah ditandatangani (Max
-                                5MB)</p>
-                </div>
+                        <p class="text-sm text-gray-500 mt-2">Upload foto/scan surat yang sudah ditandatangani (Max
+                            5MB)</p>
             </div>
+
 
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
                 <h3 class="font-semibold text-yellow-800 mb-2">

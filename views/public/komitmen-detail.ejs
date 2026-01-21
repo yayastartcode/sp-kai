@@ -1,0 +1,116 @@
+<section class="py-12">
+    <div class="max-w-4xl mx-auto px-4">
+        <!-- Breadcrumb -->
+        <nav class="mb-8">
+            <ol class="flex items-center space-x-2 text-sm text-gray-500">
+                <li><a href="/" class="hover:text-purple-600">Beranda</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li class="text-gray-800 font-medium">
+                    <%= feature.title %>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <div class="bg-gradient-to-r from-<%= feature.color %>-500 to-<%= feature.color %>-600 p-8 text-white">
+                <div class="flex items-center gap-6">
+                    <div class="text-6xl">
+                        <i class="<%= feature.icon %>"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-bold mb-2">
+                            <%= feature.title %>
+                        </h1>
+                        <% if (feature.description) { %>
+                            <p class="text-white/90 text-lg">
+                                <%= feature.description %>
+                            </p>
+                            <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <article class="bg-white rounded-xl shadow-lg p-8">
+            <div class="prose prose-lg max-w-none">
+                <%- feature.content %>
+            </div>
+        </article>
+
+        <!-- Back Link -->
+        <div class="mt-8 flex justify-between items-center">
+            <a href="/" class="text-purple-600 hover:text-purple-700 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+            </a>
+
+            <!-- Other Komitmens -->
+            <div class="flex gap-3">
+                <% if (feature.id !==1) { %>
+                    <a href="/komitmen/1" class="text-yellow-600 hover:underline text-sm">
+                        <i class="fas fa-file-contract mr-1"></i>Perjuangan Hak
+                    </a>
+                    <% } %>
+                        <% if (feature.id !==2) { %>
+                            <a href="/komitmen/2" class="text-blue-600 hover:underline text-sm">
+                                <i class="fas fa-shield-alt mr-1"></i>Perlindungan Hukum
+                            </a>
+                            <% } %>
+                                <% if (feature.id !==3) { %>
+                                    <a href="/komitmen/3" class="text-red-600 hover:underline text-sm">
+                                        <i class="fas fa-hands-helping mr-1"></i>Solidaritas
+                                    </a>
+                                    <% } %>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .prose h2 {
+        color: #1f2937;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .prose h3 {
+        color: #374151;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .prose p {
+        color: #4b5563;
+        line-height: 1.75;
+        margin-bottom: 1rem;
+    }
+
+    .prose ul,
+    .prose ol {
+        margin-left: 1.5rem;
+        margin-bottom: 1rem;
+        color: #4b5563;
+    }
+
+    .prose li {
+        margin-bottom: 0.5rem;
+    }
+
+    .prose strong {
+        color: #1f2937;
+    }
+
+    .prose a {
+        color: #7c3aed;
+        text-decoration: underline;
+    }
+
+    .prose a:hover {
+        color: #5b21b6;
+    }
+</style>

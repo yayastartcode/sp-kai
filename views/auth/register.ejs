@@ -45,11 +45,42 @@
                                 placeholder="Nama unit kerja / kantor">
                         </div>
 
+                        <!-- Alamat dengan API Wilayah Indonesia -->
                         <div class="md:col-span-2">
                             <label class="block text-gray-700 font-medium mb-2">Alamat Rumah *</label>
-                            <textarea name="address" rows="2" required
+                            <div class="grid md:grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <select name="province_id" id="province" required
+                                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                        <option value="">-- Pilih Provinsi --</option>
+                                    </select>
+                                    <input type="hidden" name="province_name" id="province_name">
+                                </div>
+                                <div>
+                                    <select name="regency_id" id="regency" required disabled
+                                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:bg-gray-100">
+                                        <option value="">-- Pilih Kab/Kota --</option>
+                                    </select>
+                                    <input type="hidden" name="regency_name" id="regency_name">
+                                </div>
+                                <div>
+                                    <select name="district_id" id="district" required disabled
+                                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:bg-gray-100">
+                                        <option value="">-- Pilih Kecamatan --</option>
+                                    </select>
+                                    <input type="hidden" name="district_name" id="district_name">
+                                </div>
+                                <div>
+                                    <select name="village_id" id="village" required disabled
+                                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:bg-gray-100">
+                                        <option value="">-- Pilih Kelurahan/Desa --</option>
+                                    </select>
+                                    <input type="hidden" name="village_name" id="village_name">
+                                </div>
+                            </div>
+                            <input type="text" name="address_detail" required
                                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                placeholder="Alamat lengkap tempat tinggal"></textarea>
+                                placeholder="RT/RW, Nama Jalan, No. Rumah (detail alamat)">
                         </div>
 
                         <div>
@@ -126,7 +157,7 @@
                             <input type="radio" name="contribution_type" value="transfer" required
                                 class="mt-1 mr-3 text-orange-600 focus:ring-orange-500">
                             <div>
-                                <span class="font-medium text-gray-800">Transfer Sukarela ke Rekening Serikat</span>
+                                <span class="font-medium text-gray-800">Transfer Mandiri ke Rekening Serikat</span>
                                 <p class="text-sm text-gray-600 mt-1">Saya akan melakukan transfer mandiri setiap bulan
                                     ke rekening DPPP SP-KAI</p>
                             </div>
@@ -137,7 +168,8 @@
                             <input type="radio" name="contribution_type" value="salary_deduction" required
                                 class="mt-1 mr-3 text-orange-600 focus:ring-orange-500">
                             <div>
-                                <span class="font-medium text-gray-800">Potong Gaji oleh Perusahaan</span>
+                                <span class="font-medium text-gray-800">Potong Gaji Melalui Payroll oleh
+                                    Perusahaan</span>
                                 <p class="text-sm text-gray-600 mt-1">Iuran dipotong langsung dari gaji oleh Perusahaan
                                     dan/atau melalui bank</p>
                             </div>
@@ -261,4 +293,122 @@
             }
         });
     });
+
+    // API Wilayah Indonesia
+    const API_BASE = 'https://yayastartcode.github.io/api-indo/api';
+
+    const provinceSelect = document.getElementById('province');
+    const regencySelect = document.getElementById('regency');
+    const districtSelect = document.getElementById('district');
+    const villageSelect = document.getElementById('village');
+
+    // Load provinces on page load
+    async function loadProvinces() {
+        try {
+            const response = await fetch(`${API_BASE}/provinces.json`);
+            const provinces = await response.json();
+            provinces.forEach(prov => {
+                const option = document.createElement('option');
+                option.value = prov.id;
+                option.textContent = prov.name;
+                option.dataset.name = prov.name;
+                provinceSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading provinces:', error);
+        }
+    }
+
+    // Province change - load regencies
+    provinceSelect.addEventListener('change', async function () {
+        const provinceId = this.value;
+        document.getElementById('province_name').value = this.options[this.selectedIndex].dataset.name || '';
+
+        // Reset dependent selects
+        regencySelect.innerHTML = '<option value="">-- Pilih Kab/Kota --</option>';
+        districtSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+        villageSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+        regencySelect.disabled = true;
+        districtSelect.disabled = true;
+        villageSelect.disabled = true;
+
+        if (provinceId) {
+            try {
+                const response = await fetch(`${API_BASE}/regencies/${provinceId}.json`);
+                const regencies = await response.json();
+                regencies.forEach(reg => {
+                    const option = document.createElement('option');
+                    option.value = reg.id;
+                    option.textContent = reg.name;
+                    option.dataset.name = reg.name;
+                    regencySelect.appendChild(option);
+                });
+                regencySelect.disabled = false;
+            } catch (error) {
+                console.error('Error loading regencies:', error);
+            }
+        }
+    });
+
+    // Regency change - load districts
+    regencySelect.addEventListener('change', async function () {
+        const regencyId = this.value;
+        document.getElementById('regency_name').value = this.options[this.selectedIndex].dataset.name || '';
+
+        districtSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+        villageSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+        districtSelect.disabled = true;
+        villageSelect.disabled = true;
+
+        if (regencyId) {
+            try {
+                const response = await fetch(`${API_BASE}/districts/${regencyId}.json`);
+                const districts = await response.json();
+                districts.forEach(dist => {
+                    const option = document.createElement('option');
+                    option.value = dist.id;
+                    option.textContent = dist.name;
+                    option.dataset.name = dist.name;
+                    districtSelect.appendChild(option);
+                });
+                districtSelect.disabled = false;
+            } catch (error) {
+                console.error('Error loading districts:', error);
+            }
+        }
+    });
+
+    // District change - load villages
+    districtSelect.addEventListener('change', async function () {
+        const districtId = this.value;
+        document.getElementById('district_name').value = this.options[this.selectedIndex].dataset.name || '';
+
+        villageSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+        villageSelect.disabled = true;
+
+        if (districtId) {
+            try {
+                const response = await fetch(`${API_BASE}/villages/${districtId}.json`);
+                const villages = await response.json();
+                villages.forEach(vill => {
+                    const option = document.createElement('option');
+                    option.value = vill.id;
+                    option.textContent = vill.name;
+                    option.dataset.name = vill.name;
+                    villageSelect.appendChild(option);
+                });
+                villageSelect.disabled = false;
+            } catch (error) {
+                console.error('Error loading villages:', error);
+            }
+        }
+    });
+
+    // Village change - save name
+    villageSelect.addEventListener('change', function () {
+        document.getElementById('village_name').value = this.options[this.selectedIndex].dataset.name || '';
+    });
+
+    // Load provinces when page loads
+    loadProvinces();
 </script>

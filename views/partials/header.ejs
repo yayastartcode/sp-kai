@@ -20,7 +20,8 @@
                 <li><a href="/" class="text-gray-600 hover:text-orange-600">Beranda</a></li>
                 <li><a href="/tentang" class="text-gray-600 hover:text-orange-600">Tentang</a></li>
                 <li><a href="/galeri" class="text-gray-600 hover:text-orange-600">Galeri</a></li>
-                <li><a href="/#berita" class="text-gray-600 hover:text-orange-600">Berita</a></li>
+                <li><a href="/berita" class="text-gray-600 hover:text-orange-600">Berita</a></li>
+                <li><a href="/kontak" class="text-gray-600 hover:text-orange-600">Kontak</a></li>
 
                 <% if (typeof user !=='undefined' && user) { %>
                     <% if (user.role==='admin' ) { %>
@@ -52,7 +53,8 @@
                 <li><a href="/" class="block py-2 text-gray-600">Beranda</a></li>
                 <li><a href="/tentang" class="block py-2 text-gray-600">Tentang</a></li>
                 <li><a href="/galeri" class="block py-2 text-gray-600">Galeri</a></li>
-                <li><a href="/#berita" class="block py-2 text-gray-600">Berita</a></li>
+                <li><a href="/berita" class="block py-2 text-gray-600">Berita</a></li>
+                <li><a href="/kontak" class="block py-2 text-gray-600">Kontak</a></li>
                 <% if (typeof user !=='undefined' && user) { %>
                     <% if (user.role==='admin' ) { %>
                         <li><a href="/admin/dashboard" class="block py-2 text-gray-600">Dashboard</a></li>

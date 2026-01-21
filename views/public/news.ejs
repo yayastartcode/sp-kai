@@ -1,0 +1,99 @@
+<section class="py-12">
+    <div class="max-w-6xl mx-auto px-4">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-4">Berita & Informasi</h1>
+        <p class="text-center text-gray-600 mb-12">Berita terbaru dan informasi penting dari organisasi kami</p>
+
+        <% if (news && news.length> 0) { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <% news.forEach(item=> { %>
+                    <a href="/berita/<%= item.slug %>" class="group">
+                        <div
+                            class="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 overflow-hidden">
+                            <div class="relative overflow-hidden h-48">
+                                <% if (item.image) { %>
+                                    <img src="<%= item.image %>" alt="<%= item.title %>"
+                                        class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                    <% } else { %>
+                                        <div
+                                            class="w-full h-full bg-gradient-to-br from-purple-500 to-orange-500 flex items-center justify-center">
+                                            <i class="fas fa-newspaper text-white text-4xl"></i>
+                                        </div>
+                                        <% } %>
+                                            <div
+                                                class="absolute top-3 left-3 bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                                                <i class="fas fa-eye mr-1"></i>
+                                                <%= item.views || 0 %>
+                                            </div>
+                            </div>
+                            <div class="p-5">
+                                <div class="text-sm text-gray-500 mb-2">
+                                    <i class="far fa-calendar mr-1"></i>
+                                    <%= new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric' ,
+                                        month: 'long' , year: 'numeric' }) %>
+                                </div>
+                                <h3
+                                    class="font-semibold text-gray-800 text-lg mb-2 group-hover:text-purple-600 transition line-clamp-2">
+                                    <%= item.title %>
+                                </h3>
+                                <% if (item.excerpt || item.content) { %>
+                                    <p class="text-gray-600 text-sm line-clamp-3">
+                                        <%= (item.excerpt || item.content.replace(/<[^>]*>/g, '')).substring(0, 120)
+                                            %>...
+                                    </p>
+                                    <% } %>
+                                        <div class="mt-4 text-purple-600 text-sm font-medium group-hover:underline">
+                                            Baca selengkapnya <i class="fas fa-arrow-right ml-1"></i>
+                                        </div>
+                            </div>
+                        </div>
+                    </a>
+                    <% }) %>
+            </div>
+
+            <!-- Pagination with Clean URLs -->
+            <% if (totalPages> 1) { %>
+                <div class="mt-12 flex justify-center items-center gap-2">
+                    <% if (currentPage> 1) { %>
+                        <a href="/berita/page/<%= currentPage - 1 %>"
+                            class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        <% } %>
+
+                            <% for (let i=1; i <=totalPages; i++) { %>
+                                <% if (i===currentPage) { %>
+                                    <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">
+                                        <%= i %>
+                                    </span>
+                                    <% } else if (i===1 || i===totalPages || (i>= currentPage - 2 && i <= currentPage +
+                                            2)) { %>
+                                            <% const pageUrl=i===1 ? '/berita' : '/berita/page/' + i; %>
+                                                <a href="<%= pageUrl %>"
+                                                    class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">
+                                                    <%= i %>
+                                                </a>
+                                                <% } else if (i===currentPage - 3 || i===currentPage + 3) { %>
+                                                    <span class="px-2">...</span>
+                                                    <% } %>
+                                                        <% } %>
+
+                                                            <% if (currentPage < totalPages) { %>
+                                                                <a href="/berita/page/<%= currentPage + 1 %>"
+                                                                    class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition">
+                                                                    <i class="fas fa-chevron-right"></i>
+                                                                </a>
+                                                                <% } %>
+                </div>
+                <p class="text-center text-sm text-gray-500 mt-4">
+                    Menampilkan <%= (currentPage - 1) * limit + 1 %> - <%= Math.min(currentPage * limit, totalItems) %>
+                            dari <%= totalItems %> berita
+                </p>
+                <% } %>
+                    <% } else { %>
+                        <div class="text-center py-16">
+                            <i class="fas fa-newspaper text-6xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500 text-lg">Belum ada berita yang dipublikasikan.</p>
+                        </div>
+                        <% } %>
+    </div>
+</section>

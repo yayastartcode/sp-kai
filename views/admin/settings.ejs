@@ -246,56 +246,158 @@
                 </div>
             </div>
 
-            <!-- Features Section -->
+            <!-- Komitmen Section -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Fitur (3 Kolom)</h2>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Section "Komitmen Kami"</h2>
 
-                <!-- Feature 1 -->
-                <div class="mb-6 pb-6 border-b">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Fitur 1: Perjuangan Hak Pekerja</h3>
+                <!-- Section Title & Subtitle -->
+                <div class="grid md:grid-cols-2 gap-4 mb-6 pb-6 border-b">
                     <div>
-                        <label class="block text-gray-700 font-medium mb-2">Judul Fitur 1</label>
-                        <input type="text" name="feature_1_title"
-                            value="<%= settings.feature_1_title || 'Perjuangan Hak Pekerja' %>"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3">
+                        <label class="block text-gray-700 font-medium mb-2">Judul Section</label>
+                        <input type="text" name="komitmen_title"
+                            value="<%= settings.komitmen_title || 'Komitmen Kami Untuk Anda' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-medium mb-2">Deskripsi Fitur 1</label>
-                        <textarea name="feature_1_description" rows="2"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= settings.feature_1_description || '' %></textarea>
+                        <label class="block text-gray-700 font-medium mb-2">Subtitle Section</label>
+                        <input type="text" name="komitmen_subtitle"
+                            value="<%= settings.komitmen_subtitle || 'Tiga pilar utama yang menjadi fondasi organisasi kami' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
                 </div>
 
-                <!-- Feature 2 -->
+                <!-- Feature 1 -->
                 <div class="mb-6 pb-6 border-b">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Fitur 2: Perlindungan Hukum</h3>
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Judul Fitur 2</label>
-                        <input type="text" name="feature_2_title"
-                            value="<%= settings.feature_2_title || 'Perlindungan Hukum' %>"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Fitur 1 <span
+                            class="text-yellow-500">(Kuning)</span></h3>
+                    <div class="grid md:grid-cols-3 gap-4 mb-3">
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-2">Judul Fitur 1</label>
+                            <input type="text" name="feature_1_title"
+                                value="<%= settings.feature_1_title || 'Perjuangan Hak Pekerja' %>"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Icon (FontAwesome)</label>
+                            <input type="text" name="feature_1_icon"
+                                value="<%= settings.feature_1_icon || 'fas fa-file-contract' %>"
+                                placeholder="fas fa-icon-name"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="block text-gray-700 font-medium mb-2">Deskripsi Singkat</label>
+                        <textarea name="feature_1_description" rows="2"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= settings.feature_1_description || '' %></textarea>
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-medium mb-2">Deskripsi Fitur 2</label>
+                        <label class="block text-gray-700 font-medium mb-2">Konten Halaman Detail</label>
+                        <textarea name="feature_1_content" rows="6"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"><%= settings.feature_1_content || '' %></textarea>
+                        <p class="text-xs text-gray-500 mt-1">
+                            <i class="fas fa-code mr-1"></i>Mendukung HTML. Konten lengkap yang tampil di halaman detail
+                            komitmen.
+                        </p>
+                    </div>
+                </div>
+                <!-- Feature 2 -->
+                <div class="mb-6 pb-6 border-b">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Fitur 2 <span
+                            class="text-blue-500">(Biru)</span></h3>
+                    <div class="grid md:grid-cols-3 gap-4 mb-3">
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-2">Judul Fitur 2</label>
+                            <input type="text" name="feature_2_title"
+                                value="<%= settings.feature_2_title || 'Perlindungan Hukum' %>"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Icon (FontAwesome)</label>
+                            <input type="text" name="feature_2_icon"
+                                value="<%= settings.feature_2_icon || 'fas fa-shield-alt' %>"
+                                placeholder="fas fa-icon-name"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="block text-gray-700 font-medium mb-2">Deskripsi Singkat</label>
                         <textarea name="feature_2_description" rows="2"
                             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= settings.feature_2_description || '' %></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Konten Halaman Detail</label>
+                        <textarea name="feature_2_content" rows="6"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"><%= settings.feature_2_content || '' %></textarea>
+                        <p class="text-xs text-gray-500 mt-1">
+                            <i class="fas fa-code mr-1"></i>Mendukung HTML. Konten lengkap yang tampil di halaman detail
+                            komitmen.
+                        </p>
                     </div>
                 </div>
 
                 <!-- Feature 3 -->
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Fitur 3: Solidaritas Berserikat</h3>
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Judul Fitur 3</label>
-                        <input type="text" name="feature_3_title"
-                            value="<%= settings.feature_3_title || 'Solidaritas Berserikat' %>"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 mb-3">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Fitur 3 <span
+                            class="text-red-500">(Merah)</span></h3>
+                    <div class="grid md:grid-cols-3 gap-4 mb-3">
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-2">Judul Fitur 3</label>
+                            <input type="text" name="feature_3_title"
+                                value="<%= settings.feature_3_title || 'Solidaritas Berserikat' %>"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Icon (FontAwesome)</label>
+                            <input type="text" name="feature_3_icon"
+                                value="<%= settings.feature_3_icon || 'fas fa-hands-helping' %>"
+                                placeholder="fas fa-icon-name"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Deskripsi Fitur 3</label>
+                    <div class="mb-3">
+                        <label class="block text-gray-700 font-medium mb-2">Deskripsi Singkat</label>
                         <textarea name="feature_3_description" rows="2"
                             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= settings.feature_3_description || '' %></textarea>
                     </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Konten Halaman Detail</label>
+                        <textarea name="feature_3_content" rows="6"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"><%= settings.feature_3_content || '' %></textarea>
+                        <p class="text-xs text-gray-500 mt-1">
+                            <i class="fas fa-code mr-1"></i>Mendukung HTML. Konten lengkap yang tampil di halaman detail
+                            komitmen.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Page Settings -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Halaman Kontak</h2>
+
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Judul Halaman</label>
+                        <input type="text" name="contact_title" value="<%= settings.contact_title || 'Hubungi Kami' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">Deskripsi</label>
+                        <input type="text" name="contact_description" value="<%= settings.contact_description || '' %>"
+                            placeholder="Deskripsi singkat halaman kontak"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Konten Alamat DPPD (HTML)</label>
+                    <textarea name="contact_content" rows="10"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"><%= settings.contact_content || '' %></textarea>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-code mr-1"></i>Mendukung HTML. Gunakan untuk daftar alamat DPPD seluruh
+                        Indonesia.
+                        Contoh format: &lt;h3&gt;DPPD Surabaya&lt;/h3&gt;&lt;p&gt;Alamat: ...&lt;/p&gt;
+                    </p>
                 </div>
             </div>
 

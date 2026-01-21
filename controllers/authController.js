@@ -105,11 +105,22 @@ exports.registerPage = async (req, res) => {
 
 exports.register = async (req, res) => {
     try {
-        const { nipp, password, password_confirm, name, phone, address, tempat_lahir, tanggal_lahir, asal, contribution_type } = req.body;
+        const {
+            nipp, password, password_confirm, name, phone,
+            tempat_lahir, tanggal_lahir, asal, contribution_type,
+            province_id, province_name, regency_id, regency_name,
+            district_id, district_name, village_id, village_name, address_detail
+        } = req.body;
 
         // Validate input
         if (!nipp || !password || !name || !tempat_lahir || !tanggal_lahir || !asal || !contribution_type) {
             req.session.error = 'Semua field wajib harus diisi';
+            return res.redirect('/register');
+        }
+
+        // Validate address fields
+        if (!province_id || !regency_id || !district_id || !village_id || !address_detail) {
+            req.session.error = 'Alamat harus diisi lengkap (Provinsi, Kab/Kota, Kecamatan, Kelurahan, Detail)';
             return res.redirect('/register');
         }
 
@@ -139,11 +150,18 @@ exports.register = async (req, res) => {
         // Generate member_id
         const memberId = `MBR${String(Date.now()).slice(-8)}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
 
-        // Insert user - using 'asal' column only
+        // Build full address string
+        const fullAddress = `${address_detail}, ${village_name}, ${district_name}, ${regency_name}, ${province_name}`;
+
+        // Insert user with address data
         await db.query(
-            `INSERT INTO users (nipp, password, name, phone, address, photo, tempat_lahir, tanggal_lahir, asal, contribution_type, role, status, member_id) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [nipp.trim(), hashedPassword, name, phone || null, address || null, photo, tempat_lahir, tanggal_lahir, asal, contribution_type, 'member', 'pending', memberId]
+            `INSERT INTO users (nipp, password, name, phone, address, photo, tempat_lahir, tanggal_lahir, asal, contribution_type, 
+             province_id, province_name, regency_id, regency_name, district_id, district_name, village_id, village_name, address_detail,
+             role, status, member_id) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [nipp.trim(), hashedPassword, name, phone || null, fullAddress, photo, tempat_lahir, tanggal_lahir, asal, contribution_type,
+                province_id, province_name, regency_id, regency_name, district_id, district_name, village_id, village_name, address_detail,
+                'member', 'pending', memberId]
         );
 
         req.session.success = 'Pendaftaran berhasil! Silakan login untuk melanjutkan proses.';
