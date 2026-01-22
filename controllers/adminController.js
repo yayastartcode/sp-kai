@@ -178,6 +178,7 @@ exports.members = async (req, res) => {
     try {
         const settings = await getSettings();
         const status = req.query.status || 'all';
+        const contribution = req.query.contribution || '';
         const search = req.query.search || '';
         const page = parseInt(req.query.page) || 1;
         const limit = 20; // Members per page
@@ -190,6 +191,12 @@ exports.members = async (req, res) => {
         if (status !== 'all') {
             baseQuery += ' AND status = ?';
             params.push(status);
+        }
+
+        // Contribution type filter
+        if (contribution && (contribution === 'transfer' || contribution === 'salary_deduction')) {
+            baseQuery += ' AND contribution_type = ?';
+            params.push(contribution);
         }
 
         // Search filter
@@ -213,6 +220,7 @@ exports.members = async (req, res) => {
             settings,
             members,
             currentStatus: status,
+            currentContribution: contribution,
             search,
             currentPage: page,
             totalPages,
