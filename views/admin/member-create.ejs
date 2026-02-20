@@ -4,70 +4,131 @@
 
         <div class="bg-white rounded-lg shadow-md p-6">
             <form action="/admin/members/create" method="POST" enctype="multipart/form-data">
-                <div class="grid md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Nama Lengkap *</label>
-                        <input type="text" name="name" required
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">NIPP *</label>
-                        <input type="text" name="nipp" required
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="Nomor Induk Pegawai Perusahaan">
+
+                <!-- Data Pribadi -->
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Data Pribadi</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Nama Lengkap *</label>
+                            <input type="text" name="name" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">NIPP *</label>
+                            <input type="text" name="nipp" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Nomor Induk Pegawai Perusahaan">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tempat Lahir</label>
+                            <input type="text" name="tempat_lahir"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Kota kelahiran">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tanggal Lahir</label>
+                            <input type="date" name="tanggal_lahir"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">No. Telp/HP</label>
+                            <input type="tel" name="phone"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="08xxxxxxxxxx">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">NIAS</label>
+                            <input type="text" name="nias"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Nomor Induk Anggota Serikat">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 font-medium mb-2">Unit Kerja / Asal Kantor</label>
+                            <input type="text" name="asal"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Nama unit kerja / kantor">
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Nomor HP</label>
-                        <input type="tel" name="phone"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="08xxxxxxxxxx">
+                <!-- Alamat -->
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Alamat Rumah</h2>
+                    <div class="grid md:grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <select name="province_id" id="province"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">-- Pilih Provinsi --</option>
+                            </select>
+                            <input type="hidden" name="province_name" id="province_name">
+                        </div>
+                        <div>
+                            <select name="regency_id" id="regency" disabled
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
+                                <option value="">-- Pilih Kab/Kota --</option>
+                            </select>
+                            <input type="hidden" name="regency_name" id="regency_name">
+                        </div>
+                        <div>
+                            <select name="district_id" id="district" disabled
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
+                                <option value="">-- Pilih Kecamatan --</option>
+                            </select>
+                            <input type="hidden" name="district_name" id="district_name">
+                        </div>
+                        <div>
+                            <select name="village_id" id="village" disabled
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
+                                <option value="">-- Pilih Kelurahan/Desa --</option>
+                            </select>
+                            <input type="hidden" name="village_name" id="village_name">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">NIAS</label>
-                        <input type="text" name="nias"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="Nomor Induk Anggota Serikat">
+                    <input type="text" name="address_detail"
+                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        placeholder="RT/RW, Nama Jalan, No. Rumah (detail alamat)">
+                </div>
+
+                <!-- Kontribusi & Status -->
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Kontribusi & Status</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tipe Kontribusi *</label>
+                            <select name="contribution_type" required
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="salary_deduction">Payroll (Potong Gaji)</option>
+                                <option value="transfer">Mandiri (Transfer)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Status</label>
+                            <select name="status"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Asal Kantor</label>
-                        <input type="text" name="asal"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="Nama kantor/unit kerja">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Status</label>
-                        <select name="status"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <option value="pending">Pending</option>
-                            <option value="approved">Approved</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Alamat</label>
-                    <textarea name="address" rows="2"
-                        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Password *</label>
-                        <input type="password" name="password" required minlength="6"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="Minimal 6 karakter">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-medium mb-2">Foto</label>
-                        <input type="file" name="photo" accept="image/*"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <!-- Password & Foto -->
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">Password & Foto</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Password *</label>
+                            <input type="password" name="password" required minlength="6"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Minimal 6 karakter">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Foto</label>
+                            <input type="file" name="photo" accept="image/*"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
                     </div>
                 </div>
 
@@ -90,3 +151,116 @@
         </div>
     </div>
 </section>
+
+<script>
+    // API Wilayah Indonesia
+    const API_BASE = 'https://yayastartcode.github.io/api-indo/api';
+
+    const provinceSelect = document.getElementById('province');
+    const regencySelect = document.getElementById('regency');
+    const districtSelect = document.getElementById('district');
+    const villageSelect = document.getElementById('village');
+
+    async function loadProvinces() {
+        try {
+            const response = await fetch(`${API_BASE}/provinces.json`);
+            const provinces = await response.json();
+            provinces.forEach(prov => {
+                const option = document.createElement('option');
+                option.value = prov.id;
+                option.textContent = prov.name;
+                option.dataset.name = prov.name;
+                provinceSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading provinces:', error);
+        }
+    }
+
+    provinceSelect.addEventListener('change', async function () {
+        const provinceId = this.value;
+        document.getElementById('province_name').value = this.options[this.selectedIndex].dataset.name || '';
+
+        regencySelect.innerHTML = '<option value="">-- Pilih Kab/Kota --</option>';
+        districtSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+        villageSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+        regencySelect.disabled = true;
+        districtSelect.disabled = true;
+        villageSelect.disabled = true;
+
+        if (provinceId) {
+            try {
+                const response = await fetch(`${API_BASE}/regencies/${provinceId}.json`);
+                const regencies = await response.json();
+                regencies.forEach(reg => {
+                    const option = document.createElement('option');
+                    option.value = reg.id;
+                    option.textContent = reg.name;
+                    option.dataset.name = reg.name;
+                    regencySelect.appendChild(option);
+                });
+                regencySelect.disabled = false;
+            } catch (error) {
+                console.error('Error loading regencies:', error);
+            }
+        }
+    });
+
+    regencySelect.addEventListener('change', async function () {
+        const regencyId = this.value;
+        document.getElementById('regency_name').value = this.options[this.selectedIndex].dataset.name || '';
+
+        districtSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+        villageSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+        districtSelect.disabled = true;
+        villageSelect.disabled = true;
+
+        if (regencyId) {
+            try {
+                const response = await fetch(`${API_BASE}/districts/${regencyId}.json`);
+                const districts = await response.json();
+                districts.forEach(dist => {
+                    const option = document.createElement('option');
+                    option.value = dist.id;
+                    option.textContent = dist.name;
+                    option.dataset.name = dist.name;
+                    districtSelect.appendChild(option);
+                });
+                districtSelect.disabled = false;
+            } catch (error) {
+                console.error('Error loading districts:', error);
+            }
+        }
+    });
+
+    districtSelect.addEventListener('change', async function () {
+        const districtId = this.value;
+        document.getElementById('district_name').value = this.options[this.selectedIndex].dataset.name || '';
+
+        villageSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+        villageSelect.disabled = true;
+
+        if (districtId) {
+            try {
+                const response = await fetch(`${API_BASE}/villages/${districtId}.json`);
+                const villages = await response.json();
+                villages.forEach(vill => {
+                    const option = document.createElement('option');
+                    option.value = vill.id;
+                    option.textContent = vill.name;
+                    option.dataset.name = vill.name;
+                    villageSelect.appendChild(option);
+                });
+                villageSelect.disabled = false;
+            } catch (error) {
+                console.error('Error loading villages:', error);
+            }
+        }
+    });
+
+    villageSelect.addEventListener('change', function () {
+        document.getElementById('village_name').value = this.options[this.selectedIndex].dataset.name || '';
+    });
+
+    loadProvinces();
+</script>
