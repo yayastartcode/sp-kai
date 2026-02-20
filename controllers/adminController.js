@@ -433,7 +433,12 @@ exports.createMember = async (req, res) => {
 
 exports.updateMember = async (req, res) => {
     try {
-        const { nipp, phone, name, address, nias, asal, status } = req.body;
+        const {
+            nipp, phone, name, nias, asal, status,
+            tempat_lahir, tanggal_lahir, contribution_type,
+            province_id, province_name, regency_id, regency_name,
+            district_id, district_name, village_id, village_name, address_detail
+        } = req.body;
         const memberId = req.params.id;
 
         // Check if NIPP already exists for other users
@@ -454,8 +459,29 @@ exports.updateMember = async (req, res) => {
             }
         }
 
-        let updateQuery = 'UPDATE users SET nipp = ?, phone = ?, name = ?, address = ?, nias = ?, asal = ?, status = ?';
-        let params = [nipp && nipp.trim() ? nipp.trim() : null, phone || null, name, address || null, nias && nias.trim() ? nias.trim() : null, asal || null, status];
+        // Build full address string
+        let fullAddress = null;
+        if (address_detail && village_name) {
+            fullAddress = `${address_detail}, ${village_name}, ${district_name}, ${regency_name}, ${province_name}`;
+        }
+
+        let updateQuery = `UPDATE users SET nipp = ?, phone = ?, name = ?, nias = ?, asal = ?, status = ?,
+            tempat_lahir = ?, tanggal_lahir = ?, contribution_type = ?,
+            province_id = ?, province_name = ?, regency_id = ?, regency_name = ?,
+            district_id = ?, district_name = ?, village_id = ?, village_name = ?, address_detail = ?`;
+        let params = [
+            nipp && nipp.trim() ? nipp.trim() : null, phone || null, name,
+            nias && nias.trim() ? nias.trim() : null, asal || null, status,
+            tempat_lahir || null, tanggal_lahir || null, contribution_type || 'salary_deduction',
+            province_id || null, province_name || null, regency_id || null, regency_name || null,
+            district_id || null, district_name || null, village_id || null, village_name || null, address_detail || null
+        ];
+
+        // Update address if new address data provided
+        if (fullAddress) {
+            updateQuery += ', address = ?';
+            params.push(fullAddress);
+        }
 
         // Add photo if uploaded
         if (req.file) {

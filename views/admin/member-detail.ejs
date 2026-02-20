@@ -70,6 +70,21 @@
 
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tempat Lahir</label>
+                            <input type="text" name="tempat_lahir" value="<%= member.tempat_lahir || '' %>"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Kota kelahiran">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tanggal Lahir</label>
+                            <input type="date" name="tanggal_lahir"
+                                value="<%= member.tanggal_lahir ? new Date(member.tanggal_lahir).toISOString().split('T')[0] : '' %>"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
                             <label class="block text-gray-700 font-medium mb-2">Nomor HP</label>
                             <input type="tel" name="phone" value="<%= member.phone || '' %>"
                                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
@@ -84,11 +99,24 @@
 
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label class="block text-gray-700 font-medium mb-2">Asal Kantor</label>
+                            <label class="block text-gray-700 font-medium mb-2">Unit Kerja / Asal Kantor</label>
                             <input type="text" name="asal" value="<%= member.asal || '' %>"
                                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 placeholder="Nama kantor/unit kerja">
                         </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tipe Kontribusi</label>
+                            <select name="contribution_type"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="salary_deduction" <%=member.contribution_type==='salary_deduction'
+                                    ? 'selected' : '' %>>Payroll (Potong Gaji)</option>
+                                <option value="transfer" <%=member.contribution_type==='transfer' ? 'selected' : '' %>
+                                    >Mandiri (Transfer)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Status</label>
                             <select name="status"
@@ -101,25 +129,64 @@
                                 </option>
                             </select>
                         </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-2">Alamat</label>
-                        <textarea name="address" rows="2"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"><%= member.address || '' %></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Member ID</label>
                             <input type="text" value="<%= member.member_id || 'Auto-generate' %>" disabled
                                 class="w-full px-4 py-2 border rounded-lg bg-gray-100 text-gray-600">
                         </div>
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Ganti Foto</label>
-                            <input type="file" name="photo" accept="image/*"
-                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+
+                    <!-- Alamat -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2">Alamat</label>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <select name="province_id" id="province"
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="">-- Pilih Provinsi --</option>
+                                </select>
+                                <input type="hidden" name="province_name" id="province_name"
+                                    value="<%= member.province_name || '' %>">
+                            </div>
+                            <div>
+                                <select name="regency_id" id="regency" disabled
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
+                                    <option value="">-- Pilih Kab/Kota --</option>
+                                </select>
+                                <input type="hidden" name="regency_name" id="regency_name"
+                                    value="<%= member.regency_name || '' %>">
+                            </div>
+                            <div>
+                                <select name="district_id" id="district" disabled
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
+                                    <option value="">-- Pilih Kecamatan --</option>
+                                </select>
+                                <input type="hidden" name="district_name" id="district_name"
+                                    value="<%= member.district_name || '' %>">
+                            </div>
+                            <div>
+                                <select name="village_id" id="village" disabled
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
+                                    <option value="">-- Pilih Kelurahan/Desa --</option>
+                                </select>
+                                <input type="hidden" name="village_name" id="village_name"
+                                    value="<%= member.village_name || '' %>">
+                            </div>
                         </div>
+                        <input type="text" name="address_detail" value="<%= member.address_detail || '' %>"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="RT/RW, Nama Jalan, No. Rumah (detail alamat)">
+                        <% if (member.address) { %>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>Alamat saat ini: <%= member.address %>
+                            </p>
+                            <% } %>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2">Ganti Foto</label>
+                        <input type="file" name="photo" accept="image/*"
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
 
                     <div class="flex gap-3">
@@ -375,4 +442,130 @@
             icon.classList.add('fa-eye');
         }
     }
+
+    // API Wilayah Indonesia
+    const API_BASE = 'https://yayastartcode.github.io/api-indo/api';
+    const provinceSelect = document.getElementById('province');
+    const regencySelect = document.getElementById('regency');
+    const districtSelect = document.getElementById('district');
+    const villageSelect = document.getElementById('village');
+
+    // Existing member data
+    const existingProvinceId = '<%= member.province_id || "" %>';
+    const existingRegencyId = '<%= member.regency_id || "" %>';
+    const existingDistrictId = '<%= member.district_id || "" %>';
+    const existingVillageId = '<%= member.village_id || "" %>';
+
+    async function loadProvinces() {
+        try {
+            const response = await fetch(`${API_BASE}/provinces.json`);
+            const provinces = await response.json();
+            provinces.forEach(prov => {
+                const option = document.createElement('option');
+                option.value = prov.id;
+                option.textContent = prov.name;
+                option.dataset.name = prov.name;
+                if (prov.id === existingProvinceId) option.selected = true;
+                provinceSelect.appendChild(option);
+            });
+            // Auto-load regencies if province exists
+            if (existingProvinceId) {
+                await loadRegencies(existingProvinceId);
+            }
+        } catch (error) {
+            console.error('Error loading provinces:', error);
+        }
+    }
+
+    async function loadRegencies(provinceId) {
+        try {
+            const response = await fetch(`${API_BASE}/regencies/${provinceId}.json`);
+            const regencies = await response.json();
+            regencySelect.innerHTML = '<option value="">-- Pilih Kab/Kota --</option>';
+            regencies.forEach(reg => {
+                const option = document.createElement('option');
+                option.value = reg.id;
+                option.textContent = reg.name;
+                option.dataset.name = reg.name;
+                if (reg.id === existingRegencyId) option.selected = true;
+                regencySelect.appendChild(option);
+            });
+            regencySelect.disabled = false;
+            if (existingRegencyId) await loadDistricts(existingRegencyId);
+        } catch (error) {
+            console.error('Error loading regencies:', error);
+        }
+    }
+
+    async function loadDistricts(regencyId) {
+        try {
+            const response = await fetch(`${API_BASE}/districts/${regencyId}.json`);
+            const districts = await response.json();
+            districtSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+            districts.forEach(dist => {
+                const option = document.createElement('option');
+                option.value = dist.id;
+                option.textContent = dist.name;
+                option.dataset.name = dist.name;
+                if (dist.id === existingDistrictId) option.selected = true;
+                districtSelect.appendChild(option);
+            });
+            districtSelect.disabled = false;
+            if (existingDistrictId) await loadVillages(existingDistrictId);
+        } catch (error) {
+            console.error('Error loading districts:', error);
+        }
+    }
+
+    async function loadVillages(districtId) {
+        try {
+            const response = await fetch(`${API_BASE}/villages/${districtId}.json`);
+            const villages = await response.json();
+            villageSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+            villages.forEach(vill => {
+                const option = document.createElement('option');
+                option.value = vill.id;
+                option.textContent = vill.name;
+                option.dataset.name = vill.name;
+                if (vill.id === existingVillageId) option.selected = true;
+                villageSelect.appendChild(option);
+            });
+            villageSelect.disabled = false;
+        } catch (error) {
+            console.error('Error loading villages:', error);
+        }
+    }
+
+    provinceSelect.addEventListener('change', async function () {
+        document.getElementById('province_name').value = this.options[this.selectedIndex].dataset.name || '';
+        regencySelect.innerHTML = '<option value="">-- Pilih Kab/Kota --</option>';
+        districtSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+        villageSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+        regencySelect.disabled = true;
+        districtSelect.disabled = true;
+        villageSelect.disabled = true;
+        if (this.value) await loadRegencies(this.value);
+    });
+
+    regencySelect.addEventListener('change', async function () {
+        document.getElementById('regency_name').value = this.options[this.selectedIndex].dataset.name || '';
+        districtSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+        villageSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+        districtSelect.disabled = true;
+        villageSelect.disabled = true;
+        if (this.value) await loadDistricts(this.value);
+    });
+
+    districtSelect.addEventListener('change', async function () {
+        document.getElementById('district_name').value = this.options[this.selectedIndex].dataset.name || '';
+        villageSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+        villageSelect.disabled = true;
+        if (this.value) await loadVillages(this.value);
+    });
+
+    villageSelect.addEventListener('change', function () {
+        document.getElementById('village_name').value = this.options[this.selectedIndex].dataset.name || '';
+    });
+
+    loadProvinces();
 </script>
