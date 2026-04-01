@@ -234,18 +234,43 @@ exports.members = async (req, res) => {
     }
 };
 
-// Export all members to Excel
+// Export members to Excel (with filter support)
 exports.exportMembers = async (req, res) => {
     try {
-        // Get all approved members
+        const status = req.query.status || 'all';
+        const contribution = req.query.contribution || '';
+        const search = req.query.search || '';
+
+        let baseQuery = 'FROM users WHERE role = ?';
+        let params = ['member'];
+
+        // Status filter
+        if (status !== 'all') {
+            baseQuery += ' AND status = ?';
+            params.push(status);
+        }
+
+        // Contribution type filter
+        if (contribution && (contribution === 'transfer' || contribution === 'salary_deduction')) {
+            baseQuery += ' AND contribution_type = ?';
+            params.push(contribution);
+        }
+
+        // Search filter
+        if (search) {
+            baseQuery += ' AND (name LIKE ? OR nipp LIKE ? OR nias LIKE ?)';
+            const searchTerm = `%${search}%`;
+            params.push(searchTerm, searchTerm, searchTerm);
+        }
+
         const [members] = await db.query(
-            'SELECT nipp, name, asal, nias FROM users WHERE role = ? ORDER BY name ASC',
-            ['member']
+            `SELECT nipp, name, asal, nias ${baseQuery} ORDER BY name ASC`,
+            params
         );
 
         // Prepare data with headers
         const data = [
-            ['NO', 'NIPP', 'NAMA', 'ASAL', 'NIAS']  // Headers
+            ['NO', 'NIPP', 'NAMA', 'ASAL', 'NIAS']
         ];
 
         // Add member data
@@ -277,8 +302,14 @@ exports.exportMembers = async (req, res) => {
         // Generate buffer
         const buffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
-        // Set response headers
-        const filename = `data-member-${new Date().toISOString().slice(0, 10)}.xlsx`;
+        // Build descriptive filename
+        let filenameParts = ['data-member'];
+        if (status !== 'all') filenameParts.push(status);
+        if (contribution) filenameParts.push(contribution === 'transfer' ? 'mandiri' : 'payroll');
+        if (search) filenameParts.push(search.replace(/[^a-zA-Z0-9]/g, '').substring(0, 20));
+        filenameParts.push(new Date().toISOString().slice(0, 10));
+        const filename = `${filenameParts.join('-')}.xlsx`;
+
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
         res.send(buffer);
