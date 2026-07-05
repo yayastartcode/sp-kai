@@ -4,7 +4,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "node app.js"
+    "dev": "node app.js",
+    "cards:generate-missing": "node jobs/generateMissingMemberCards.js"
   },
   "keywords": [
     "company-profile",

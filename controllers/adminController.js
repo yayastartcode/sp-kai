@@ -3,6 +3,8 @@ const path = require('path');
 const fs = require('fs');
 const xlsx = require('xlsx');
 const cardGeneratorCustom = require('../utils/cardGeneratorCustom');
+const memberCardExportQueue = require('../utils/memberCardExportQueue');
+const memberCardGenerateQueue = require('../utils/memberCardGenerateQueue');
 
 // Get settings helper
 const getSettings = async () => {
@@ -318,6 +320,136 @@ exports.exportMembers = async (req, res) => {
         console.error(error);
         req.session.error = 'Terjadi kesalahan saat export data';
         res.redirect('/admin/members');
+    }
+};
+
+// Admin page for bulk member card PDF export
+exports.cardExportPage = async (req, res) => {
+    try {
+        const settings = await getSettings();
+        const [counts] = await db.query(`
+            SELECT
+                COUNT(*) as total,
+                SUM(status = 'approved') as approved,
+                SUM(status = 'pending') as pending,
+                SUM(status = 'rejected') as rejected
+            FROM users
+            WHERE role = 'member'
+        `);
+
+        const cardStats = await memberCardGenerateQueue.getApprovedCardStats();
+
+        res.render('admin/card-export', {
+            title: 'Export Kartu Member',
+            settings,
+            counts: counts[0] || { total: 0, approved: 0, pending: 0, rejected: 0 },
+            cardStats,
+            recentJobs: await memberCardExportQueue.getRecentJobs(),
+            recentGenerateJobs: await memberCardGenerateQueue.getRecentJobs(),
+            activeJobId: req.query.job || null,
+            activeGenerateJobId: req.query.generateJob || null,
+            isProduction: process.env.NODE_ENV === 'production'
+        });
+    } catch (error) {
+        console.error(error);
+        req.session.error = 'Terjadi kesalahan saat membuka halaman export kartu';
+        res.redirect('/admin/members');
+    }
+};
+
+// Start bulk member card export in the background
+exports.startCardExport = async (req, res) => {
+    try {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const job = await memberCardExportQueue.enqueue({
+            status: req.body.status,
+            contribution: req.body.contribution,
+            search: req.body.search,
+            batchSize: req.body.batch_size,
+            exportLimit: isProduction ? null : req.body.export_limit,
+            splitPerFile: req.body.split_per_file
+        }, req.session.user?.id || null);
+
+        req.session.success = 'Export kartu member dimasukkan ke antrian background';
+        res.redirect(`/admin/members/card-export?job=${job.id}`);
+    } catch (error) {
+        console.error(error);
+        req.session.error = 'Terjadi kesalahan saat memulai export kartu';
+        res.redirect('/admin/members/card-export');
+    }
+};
+
+// Start approved missing card generation in the background
+exports.startCardGenerate = async (req, res) => {
+    try {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const job = await memberCardGenerateQueue.enqueue({
+            limit: isProduction ? null : req.body.limit,
+            batchSize: req.body.batch_size,
+            delayMs: req.body.delay_ms,
+            force: req.body.force,
+            dryRun: isProduction ? false : req.body.dry_run
+        }, req.session.user?.id || null);
+
+        req.session.success = 'Generate kartu member dimasukkan ke antrian background';
+        res.redirect(`/admin/members/card-export?generateJob=${job.id}`);
+    } catch (error) {
+        console.error(error);
+        req.session.error = 'Terjadi kesalahan saat memulai generate kartu';
+        res.redirect('/admin/members/card-export');
+    }
+};
+
+// JSON status endpoint for polling generate progress
+exports.cardGenerateStatus = async (req, res) => {
+    const job = await memberCardGenerateQueue.getJob(req.params.jobId);
+    if (!job) {
+        return res.status(404).json({ error: 'Job generate tidak ditemukan' });
+    }
+
+    res.json(job);
+};
+
+// JSON status endpoint for polling export progress
+exports.cardExportStatus = async (req, res) => {
+    const job = await memberCardExportQueue.getJob(req.params.jobId);
+    if (!job) {
+        return res.status(404).json({ error: 'Job export tidak ditemukan' });
+    }
+
+    res.json(job);
+};
+
+// Download completed export PDF
+exports.downloadCardExport = async (req, res) => {
+    try {
+        const job = await memberCardExportQueue.getJobForDownload(req.params.jobId);
+        if (!job) {
+            req.session.error = 'Job export tidak ditemukan';
+            return res.redirect('/admin/members/card-export');
+        }
+
+        if (job.status !== 'completed') {
+            req.session.error = 'File export belum siap';
+            return res.redirect(`/admin/members/card-export?job=${job.id}`);
+        }
+
+        const fileIndex = Math.max(0, parseInt(req.params.fileIndex || '0', 10) || 0);
+        const selectedFile = (job.files && job.files[fileIndex]) || {
+            filePath: job.filePath,
+            fileName: job.fileName || 'kartu-member.pdf'
+        };
+
+        if (!selectedFile.filePath || !fs.existsSync(selectedFile.filePath)) {
+            req.session.error = 'File export sudah tidak tersedia';
+            return res.redirect(`/admin/members/card-export?job=${job.id}`);
+        }
+
+        res.download(selectedFile.filePath, selectedFile.fileName || 'kartu-member.pdf');
+    } catch (error) {
+        console.error(error);
+        req.session.error = 'Terjadi kesalahan saat download export kartu';
+        res.redirect('/admin/members/card-export');
     }
 };
 

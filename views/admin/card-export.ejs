@@ -1,0 +1,368 @@
+<section class="py-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+            <div>
+                <p class="text-sm text-orange-600 font-semibold uppercase tracking-wide">Background Jobs</p>
+                <h1 class="text-3xl font-bold text-gray-800">Kartu Member Massal</h1>
+                <p class="text-gray-600 mt-2">Generate kartu missing dari dashboard, lalu export PDF A4 portrait berisi 4 member per halaman.</p>
+            </div>
+            <a href="/admin/members" class="inline-flex items-center justify-center bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200">
+                <i class="fas fa-arrow-left mr-2"></i>Kembali ke Member
+            </a>
+        </div>
+
+        <div class="grid md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                <div class="text-sm text-gray-500">Semua Member</div>
+                <div class="text-3xl font-bold text-gray-900 mt-1"><%= Number(counts.total || 0) %></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-green-100 p-5">
+                <div class="text-sm text-gray-500">Approved</div>
+                <div class="text-3xl font-bold text-green-700 mt-1"><%= Number(cardStats.approvedTotal || counts.approved || 0) %></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-blue-100 p-5">
+                <div class="text-sm text-gray-500">Kartu Siap</div>
+                <div class="text-3xl font-bold text-blue-700 mt-1"><%= Number(cardStats.readyInDatabase || 0) %></div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-orange-100 p-5">
+                <div class="text-sm text-gray-500">Perlu Generate</div>
+                <div class="text-3xl font-bold text-orange-700 mt-1"><%= Number(cardStats.missingApprox || 0) %></div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-5 gap-6">
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-2">1. Siapkan Kartu yang Belum Ada</h2>
+                    <p class="text-sm text-gray-500 mb-5">Untuk anggota approved yang belum punya kartu depan dan belakang. Aman diulang, yang sudah ada akan dilewati.</p>
+
+                    <form action="/admin/members/card-generate" method="POST" class="space-y-4">
+                        <% if (!isProduction) { %>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Limit Test (opsional)</label>
+                                <input type="number" name="limit" min="1" max="10000" placeholder="Contoh: 40"
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <p class="text-xs text-gray-500 mt-1">Isi 40 untuk test. Kosongkan untuk siapkan semua kartu yang belum ada.</p>
+                            </div>
+                        <% } %>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Jumlah Dicek</label>
+                                <select name="batch_size" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="10">10</option>
+                                    <option value="20" selected>20</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Jeda</label>
+                                <select name="delay_ms" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="500">500ms</option>
+                                    <option value="250" selected>250ms</option>
+                                    <option value="100">100ms</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <label class="flex items-start gap-3 bg-red-50 border border-red-100 rounded-lg p-3">
+                            <input type="checkbox" name="force" class="mt-1 rounded border-red-300 text-red-600 focus:ring-red-500">
+                            <span>
+                                <span class="block font-medium text-gray-800">Buat ulang semua kartu approved</span>
+                                <span class="block text-xs text-gray-500">Lebih berat. Jangan centang kalau hanya mau siapkan kartu yang belum ada.</span>
+                            </span>
+                        </label>
+
+                        <button type="submit" class="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 font-semibold">
+                            <i class="fas fa-id-card mr-2"></i>Mulai Siapkan Kartu
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-2">2. Buat PDF</h2>
+                    <p class="text-sm text-gray-500 mb-5">Export hanya menyusun PNG kartu yang sudah ada. A4 portrait, 4 member per halaman, depan atas belakang bawah.</p>
+
+                    <form action="/admin/members/card-export" method="POST" class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Status Member</label>
+                            <select name="status" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                <option value="all" selected>Semua member</option>
+                                <option value="approved">Approved saja</option>
+                                <option value="pending">Pending saja</option>
+                                <option value="rejected">Rejected saja</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tipe Kontribusi</label>
+                            <select name="contribution" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                <option value="">Semua tipe</option>
+                                <option value="transfer">Mandiri / Transfer</option>
+                                <option value="salary_deduction">Payroll / Potong Gaji</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Cari Member (opsional)</label>
+                            <input type="text" name="search" placeholder="Nama, NIPP, atau NIAS"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        </div>
+
+                        <% if (!isProduction) { %>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Limit Test (opsional)</label>
+                                <input type="number" name="export_limit" min="1" max="10000" placeholder="Contoh: 40"
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            </div>
+                        <% } %>
+
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Split per File (opsional)</label>
+                            <select name="split_per_file" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                <option value="" selected>Tidak split - 1 PDF besar</option>
+                                <option value="250">250 member per PDF</option>
+                                <option value="500">500 member per PDF</option>
+                                <option value="1000">1000 member per PDF</option>
+                            </select>
+                            <p class="text-xs text-gray-500 mt-1">Kosongkan kalau mau 1 file. Pilih split supaya file lebih ringan.</p>
+                        </div>
+
+                        <button type="submit" class="w-full bg-orange-600 text-white px-4 py-3 rounded-lg hover:bg-orange-700 font-semibold">
+                            <i class="fas fa-file-pdf mr-2"></i>Mulai Buat PDF
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 space-y-6">
+                <div id="active-generate-job" data-job-id="<%= activeGenerateJobId || '' %>" class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-800">Progress Siapkan Kartu</h2>
+                            <p id="generate-subtitle" class="text-sm text-gray-500">Mulai siapkan kartu untuk melihat progress.</p>
+                        </div>
+                        <span id="generate-status" class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">-</span>
+                    </div>
+
+                    <div class="bg-gray-100 rounded-full h-4 overflow-hidden mb-4">
+                        <div id="generate-progress-bar" class="bg-blue-600 h-full transition-all" style="width: 0%"></div>
+                    </div>
+
+                    <div class="grid sm:grid-cols-4 gap-3 mb-4">
+                        <div class="bg-gray-50 rounded-lg p-3"><div class="text-xs text-gray-500">Progress</div><div id="generate-progress" class="font-bold text-gray-900">0%</div></div>
+                        <div class="bg-gray-50 rounded-lg p-3"><div class="text-xs text-gray-500">Dicek</div><div id="generate-scanned" class="font-bold text-gray-900">0</div></div>
+                        <div class="bg-gray-50 rounded-lg p-3"><div class="text-xs text-gray-500">Dibuat</div><div id="generate-generated" class="font-bold text-gray-900">0</div></div>
+                        <div class="bg-gray-50 rounded-lg p-3"><div class="text-xs text-gray-500">Dilewati / Gagal</div><div id="generate-skip-failed" class="font-bold text-gray-900">0 / 0</div></div>
+                    </div>
+
+                    <div id="generate-message" class="text-sm text-gray-600 bg-gray-50 border border-gray-100 rounded-lg p-3">Belum ada pekerjaan siapkan kartu aktif.</div>
+                    <div id="generate-errors" class="hidden mt-4 bg-red-50 border border-red-100 text-red-700 rounded-lg p-3 text-sm"></div>
+                </div>
+
+                <div id="active-job" data-job-id="<%= activeJobId || '' %>" class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-800">Progress Buat PDF</h2>
+                            <p id="job-subtitle" class="text-sm text-gray-500">Mulai buat PDF untuk melihat progress.</p>
+                        </div>
+                        <span id="job-status" class="hidden px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">-</span>
+                    </div>
+
+                    <div class="bg-gray-100 rounded-full h-4 overflow-hidden mb-4">
+                        <div id="job-progress-bar" class="bg-orange-600 h-full transition-all" style="width: 0%"></div>
+                    </div>
+
+                    <div class="grid sm:grid-cols-4 gap-3 mb-4">
+                        <div class="bg-gray-50 rounded-lg p-3"><div class="text-xs text-gray-500">Progress</div><div id="job-progress" class="font-bold text-gray-900">0%</div></div>
+                        <div class="bg-gray-50 rounded-lg p-3"><div class="text-xs text-gray-500">Diproses</div><div id="job-done" class="font-bold text-gray-900">0/0</div></div>
+                        <div class="bg-gray-50 rounded-lg p-3"><div class="text-xs text-gray-500">PNG Disusun</div><div id="job-generated" class="font-bold text-gray-900">0</div></div>
+                        <div class="bg-gray-50 rounded-lg p-3"><div class="text-xs text-gray-500">Siap / Gagal</div><div id="job-reused-failed" class="font-bold text-gray-900">0 / 0</div></div>
+                    </div>
+
+                    <div id="job-message" class="text-sm text-gray-600 bg-gray-50 border border-gray-100 rounded-lg p-3">Belum ada job export aktif.</div>
+                    <div id="job-errors" class="hidden mt-4 bg-red-50 border border-red-100 text-red-700 rounded-lg p-3 text-sm"></div>
+                    <div id="download-area" class="hidden mt-4">
+                        <a id="download-link" href="#" class="inline-flex items-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                            <i class="fas fa-download mr-2"></i>Download PDF
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Job Terbaru</h2>
+                    <% const combinedJobs = [];
+                       (recentGenerateJobs || []).forEach(job => combinedJobs.push({ type: 'Generate', job }));
+                       (recentJobs || []).forEach(job => combinedJobs.push({ type: 'Export', job }));
+                       combinedJobs.sort((a, b) => new Date(b.job.createdAt) - new Date(a.job.createdAt)); %>
+                    <% if (combinedJobs.length === 0) { %>
+                        <p class="text-sm text-gray-500">Belum ada job di sesi server ini.</p>
+                    <% } else { %>
+                        <div class="space-y-3">
+                            <% combinedJobs.slice(0, 10).forEach(item => { %>
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border rounded-lg p-4">
+                                    <div>
+                                        <div class="font-semibold text-gray-800"><%= item.type %> - <%= item.job.id %></div>
+                                        <div class="text-sm text-gray-500"><%= new Date(item.job.createdAt).toLocaleString('id-ID') %> - <%= item.job.message %></div>
+                                        <div class="text-xs text-gray-400 mt-1">Status: <%= item.job.status %> | Progress: <%= item.job.progress %>%</div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <% if (item.type === 'Generate') { %>
+                                            <a href="/admin/members/card-export?generateJob=<%= item.job.id %>" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 text-sm">Lihat</a>
+                                        <% } else { %>
+                                            <a href="/admin/members/card-export?job=<%= item.job.id %>" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 text-sm">Lihat</a>
+                                            <% if (item.job.status === 'completed' && item.job.downloadUrl) { %>
+                                                <a href="<%= item.job.downloadUrl %>" class="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm">Download</a>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+(function () {
+    function statusClass(status) {
+        if (status === 'completed') return 'bg-green-100 text-green-700';
+        if (status === 'failed') return 'bg-red-100 text-red-700';
+        if (status === 'processing') return 'bg-blue-100 text-blue-700';
+        return 'bg-gray-100 text-gray-700';
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function renderErrors(target, errors) {
+        if (errors && errors.length > 0) {
+            target.innerHTML = '<strong>Catatan error:</strong><br>' + errors.map(function (error) {
+                const memberName = error.memberName ? escapeHtml(error.memberName) + ': ' : '';
+                return '- ' + memberName + escapeHtml(error.message);
+            }).join('<br>');
+            target.classList.remove('hidden');
+        } else {
+            target.classList.add('hidden');
+        }
+    }
+
+    function setupGeneratePolling() {
+        const root = document.getElementById('active-generate-job');
+        const jobId = root ? root.dataset.jobId : '';
+        if (!jobId) return;
+
+        const statusEl = document.getElementById('generate-status');
+        const subtitleEl = document.getElementById('generate-subtitle');
+        const progressBarEl = document.getElementById('generate-progress-bar');
+        const progressEl = document.getElementById('generate-progress');
+        const scannedEl = document.getElementById('generate-scanned');
+        const generatedEl = document.getElementById('generate-generated');
+        const skipFailedEl = document.getElementById('generate-skip-failed');
+        const messageEl = document.getElementById('generate-message');
+        const errorsEl = document.getElementById('generate-errors');
+        let timer = null;
+
+        async function poll() {
+            try {
+                const response = await fetch('/admin/members/card-generate/' + encodeURIComponent(jobId) + '/status');
+                if (!response.ok) throw new Error('Job generate tidak ditemukan');
+                const job = await response.json();
+
+                statusEl.className = 'px-3 py-1 rounded-full text-xs font-semibold ' + statusClass(job.status);
+                statusEl.textContent = job.status;
+                statusEl.classList.remove('hidden');
+                subtitleEl.textContent = job.id;
+                progressBarEl.style.width = (job.progress || 0) + '%';
+                progressEl.textContent = (job.progress || 0) + '%';
+                scannedEl.textContent = job.scanned || 0;
+                generatedEl.textContent = job.generated || 0;
+                skipFailedEl.textContent = (job.skipped || 0) + ' / ' + (job.failed || 0);
+                messageEl.textContent = job.message || '-';
+                renderErrors(errorsEl, job.errors);
+
+                if (job.status === 'completed' || job.status === 'failed') clearInterval(timer);
+            } catch (error) {
+                messageEl.textContent = error.message;
+                clearInterval(timer);
+            }
+        }
+
+        poll();
+        timer = setInterval(poll, 2000);
+    }
+
+    function setupExportPolling() {
+        const root = document.getElementById('active-job');
+        const jobId = root ? root.dataset.jobId : '';
+        if (!jobId) return;
+
+        const statusEl = document.getElementById('job-status');
+        const subtitleEl = document.getElementById('job-subtitle');
+        const progressBarEl = document.getElementById('job-progress-bar');
+        const progressEl = document.getElementById('job-progress');
+        const doneEl = document.getElementById('job-done');
+        const generatedEl = document.getElementById('job-generated');
+        const reusedFailedEl = document.getElementById('job-reused-failed');
+        const messageEl = document.getElementById('job-message');
+        const errorsEl = document.getElementById('job-errors');
+        const downloadAreaEl = document.getElementById('download-area');
+        let timer = null;
+
+        async function poll() {
+            try {
+                const response = await fetch('/admin/members/card-export/' + encodeURIComponent(jobId) + '/status');
+                if (!response.ok) throw new Error('Job export tidak ditemukan');
+                const job = await response.json();
+
+                statusEl.className = 'px-3 py-1 rounded-full text-xs font-semibold ' + statusClass(job.status);
+                statusEl.textContent = job.status;
+                statusEl.classList.remove('hidden');
+                subtitleEl.textContent = job.id;
+                progressBarEl.style.width = (job.progress || 0) + '%';
+                progressEl.textContent = (job.progress || 0) + '%';
+                doneEl.textContent = (job.done || 0) + '/' + (job.total || 0);
+                generatedEl.textContent = job.processed || 0;
+                reusedFailedEl.textContent = (job.reused || 0) + ' / ' + (job.failed || 0);
+                messageEl.textContent = job.message || '-';
+                renderErrors(errorsEl, job.errors);
+
+                if (job.status === 'completed' && ((job.files && job.files.length > 0) || job.downloadUrl)) {
+                    const files = (job.files && job.files.length > 0)
+                        ? job.files
+                        : [{ fileName: 'Download PDF', downloadUrl: job.downloadUrl, memberCount: job.processed, pages: job.pages }];
+                    downloadAreaEl.innerHTML = files.map(function (file, index) {
+                        const label = files.length > 1
+                            ? 'Download Part ' + (index + 1) + ' (' + (file.memberCount || 0) + ' member)'
+                            : 'Download PDF';
+                        return '<a href="' + file.downloadUrl + '" class="inline-flex items-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 mr-2 mb-2"><i class="fas fa-download mr-2"></i>' + escapeHtml(label) + '</a>';
+                    }).join('');
+                    downloadAreaEl.classList.remove('hidden');
+                } else {
+                    downloadAreaEl.classList.add('hidden');
+                }
+
+                if (job.status === 'completed' || job.status === 'failed') clearInterval(timer);
+            } catch (error) {
+                messageEl.textContent = error.message;
+                clearInterval(timer);
+            }
+        }
+
+        poll();
+        timer = setInterval(poll, 2000);
+    }
+
+    setupGeneratePolling();
+    setupExportPolling();
+})();
+</script>

@@ -20,6 +20,13 @@ router.post('/settings/chairman-photo', uploadAbout.single('chairman_photo'), ad
 // Members Management
 router.get('/members', adminController.members);
 router.get('/members/export', adminController.exportMembers);
+router.get('/members/card-export', adminController.cardExportPage);
+router.post('/members/card-export', adminController.startCardExport);
+router.post('/members/card-generate', adminController.startCardGenerate);
+router.get('/members/card-generate/:jobId/status', adminController.cardGenerateStatus);
+router.get('/members/card-export/:jobId/status', adminController.cardExportStatus);
+router.get('/members/card-export/:jobId/download', adminController.downloadCardExport);
+router.get('/members/card-export/:jobId/download/:fileIndex', adminController.downloadCardExport);
 router.get('/members/create', adminController.createMemberPage);
 router.post('/members/create', uploadMember.single('photo'), adminController.createMember);
 router.get('/members/:id', adminController.memberDetail);
