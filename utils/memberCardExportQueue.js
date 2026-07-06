@@ -535,13 +535,16 @@ async function getRecentJobs(limit = 10) {
     return jobs.map(decorateJob);
 }
 
-ensureInitialized().catch(error => {
-    console.error('Failed to initialize card export queue:', error);
-});
+function start() {
+    ensureInitialized().catch(error => {
+        console.error('Failed to initialize card export queue:', error);
+    });
+}
 
 module.exports = {
     enqueue,
     getJob,
     getJobForDownload,
-    getRecentJobs
+    getRecentJobs,
+    start
 };

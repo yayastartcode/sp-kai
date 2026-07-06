@@ -69,4 +69,11 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
+
+    try {
+        require('./utils/memberCardGenerateQueue').start();
+        require('./utils/memberCardExportQueue').start();
+    } catch (error) {
+        console.error('Failed to start card background jobs:', error);
+    }
 });
