@@ -39,6 +39,15 @@ function sanitizeDelay(delayMs) {
     return Math.min(parsed, MAX_DELAY_MS);
 }
 
+function sanitizeBulkIdentifiers(input) {
+    if (!input) return [];
+    return Array.from(new Set(String(input)
+        .split(/[\s,;]+/)
+        .map(item => item.trim())
+        .filter(Boolean)))
+        .slice(0, 4);
+}
+
 function createJobId() {
     return `card-generate-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -141,7 +150,30 @@ function cleanupOldCardFiles(member, cardResult) {
     });
 }
 
-async function fetchBatch(lastId, batchSize) {
+function buildIdentifierFilter(identifiers) {
+    if (!identifiers || identifiers.length === 0) return { sql: '', params: [] };
+
+    return {
+        sql: 'AND (u.nipp IN (?) OR u.nias IN (?) OR u.member_id IN (?))',
+        params: [identifiers, identifiers, identifiers]
+    };
+}
+
+async function countTargetMembers(options) {
+    const identifierFilter = buildIdentifierFilter(options.bulkIdentifiers);
+    const [rows] = await db.query(`
+        SELECT COUNT(*) as total
+        FROM users u
+        WHERE u.role = 'member'
+          AND u.status = 'approved'
+          ${identifierFilter.sql}
+    `, identifierFilter.params);
+
+    return rows[0]?.total || 0;
+}
+
+async function fetchBatch(lastId, batchSize, options = {}) {
+    const identifierFilter = buildIdentifierFilter(options.bulkIdentifiers);
     const [members] = await db.query(`
         SELECT u.*, mc.card_image AS existing_front, mc.card_image_back AS existing_back
         FROM users u
@@ -153,10 +185,11 @@ async function fetchBatch(lastId, batchSize) {
         LEFT JOIN member_cards mc ON mc.id = latest_cards.latest_card_id
         WHERE u.role = 'member'
           AND u.status = 'approved'
+          ${identifierFilter.sql}
           AND u.id > ?
         ORDER BY u.id ASC
         LIMIT ?
-    `, [lastId, batchSize]);
+    `, [...identifierFilter.params, lastId, batchSize]);
 
     return members;
 }
@@ -194,11 +227,12 @@ async function runJob(jobId) {
         const options = job.options || {};
         const settings = await getSettings();
         const stats = await getApprovedCardStats();
-        const total = options.limit || stats.approvedTotal;
+        const targetTotal = await countTargetMembers(options);
+        const total = options.limit ? Math.min(options.limit, targetTotal) : targetTotal;
 
         job = await persistProgress(job, {
             total,
-            matchingTotal: stats.approvedTotal,
+            matchingTotal: targetTotal,
             message: 'Mulai menyiapkan kartu anggota...',
             generated: job.generated || 0,
             skipped: job.skipped || 0,
@@ -212,7 +246,7 @@ async function runJob(jobId) {
         while (hasMore) {
             if (options.limit && (job.generated + job.failed) >= options.limit) break;
 
-            const members = await fetchBatch(lastId, options.batchSize);
+            const members = await fetchBatch(lastId, options.batchSize, options);
             if (members.length === 0) {
                 hasMore = false;
                 break;
@@ -335,7 +369,8 @@ async function enqueue(options = {}, requestedBy = null) {
         batchSize: sanitizeBatchSize(options.batchSize),
         delayMs: sanitizeDelay(options.delayMs),
         force: options.force === true || options.force === 'on' || options.force === 'true',
-        dryRun: options.dryRun === true || options.dryRun === 'on' || options.dryRun === 'true'
+        dryRun: options.dryRun === true || options.dryRun === 'on' || options.dryRun === 'true',
+        bulkIdentifiers: sanitizeBulkIdentifiers(options.bulkIdentifiers)
     };
 
     const job = await jobStore.createJob({

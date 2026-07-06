@@ -365,6 +365,7 @@ exports.startCardExport = async (req, res) => {
             status: req.body.status,
             contribution: req.body.contribution,
             search: req.body.search,
+            bulkIdentifiers: req.body.bulk_identifiers,
             batchSize: req.body.batch_size,
             exportLimit: isProduction ? null : req.body.export_limit,
             splitPerFile: req.body.split_per_file
@@ -387,6 +388,7 @@ exports.startCardGenerate = async (req, res) => {
             limit: isProduction ? null : req.body.limit,
             batchSize: req.body.batch_size,
             delayMs: req.body.delay_ms,
+            bulkIdentifiers: req.body.bulk_identifiers,
             force: req.body.force,
             dryRun: isProduction ? false : req.body.dry_run
         }, req.session.user?.id || null);

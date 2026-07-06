@@ -58,6 +58,15 @@ function sanitizeSplitPerFile(splitPerFile) {
     return Math.min(parsed, 2000);
 }
 
+function sanitizeBulkIdentifiers(input) {
+    if (!input) return [];
+    return Array.from(new Set(String(input)
+        .split(/[\s,;]+/)
+        .map(item => item.trim())
+        .filter(Boolean)))
+        .slice(0, 4);
+}
+
 function createJobId() {
     return `card-export-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -81,6 +90,11 @@ function buildMemberFilter(options = {}, alias = '') {
         where.push(`(${prefix}name LIKE ? OR ${prefix}nipp LIKE ? OR ${prefix}nias LIKE ?)`);
         const searchTerm = `%${options.search}%`;
         params.push(searchTerm, searchTerm, searchTerm);
+    }
+
+    if (options.bulkIdentifiers && options.bulkIdentifiers.length > 0) {
+        where.push(`(${prefix}nipp IN (?) OR ${prefix}nias IN (?) OR ${prefix}member_id IN (?))`);
+        params.push(options.bulkIdentifiers, options.bulkIdentifiers, options.bulkIdentifiers);
     }
 
     return { whereSql: `WHERE ${where.join(' AND ')}`, params };
@@ -488,7 +502,8 @@ async function enqueue(options = {}, requestedBy = null) {
         search: String(options.search || '').trim(),
         batchSize: sanitizeBatchSize(options.batchSize),
         exportLimit: sanitizeExportLimit(options.exportLimit),
-        splitPerFile: sanitizeSplitPerFile(options.splitPerFile)
+        splitPerFile: sanitizeSplitPerFile(options.splitPerFile),
+        bulkIdentifiers: sanitizeBulkIdentifiers(options.bulkIdentifiers)
     };
 
     const job = await jobStore.createJob({
